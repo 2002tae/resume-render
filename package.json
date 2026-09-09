@@ -14,7 +14,7 @@
   ],
   "scripts": {
     "build": "tsc -p .",
-    "check": "python3 tools/lint_theme.py themes/*/theme.css && python3 tools/visual_check.py && python3 tools/ats_check.py",
+    "check": "python3 tools/sync_manifests.py && python3 tools/lint_theme.py themes/*/theme.css && python3 tools/visual_check.py && python3 tools/ats_check.py",
     "prepare": "tsc -p ."
   },
   "license": "MIT",

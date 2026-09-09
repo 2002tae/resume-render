@@ -26,7 +26,10 @@ Most résumé tools give you a template and hope it parses. This one:
 
 ## Honest scope
 
-- The ATS check verifies **text-layer integrity** — that every string survives extraction, in
+- Two ATS checks. `ats_check.py` knows the markup and verifies **text-layer integrity**;
+`ats_generic.py` does not know the markup and grades what a generic heading-lexicon parser would
+identify across three extractors — that one found the letter-spacing problem the first one had
+been rationalising. The ATS check verifies **text-layer integrity** — that every string survives extraction, in
   order, with section labels and contacts intact. It is not a claim that any specific vendor's
   parser behaves a particular way. It does catch the things that actually go wrong: letter-spacing
   splitting words into characters, emails breaking mid-token, right-aligned dates landing inside
@@ -53,6 +56,9 @@ tools/          lint_theme.py    static rules (R1–R10), each traceable to a me
                 fit.py           search density, then priority trimming, until the page target holds
                                  (also detects multicolumn overflow, which does not add pages)
                 render_theme.py  render one theme with its manifest defaults
+                capacity.py      max bullets per theme at a fixed body size ("how many at 10pt?")
+                ats_generic.py   structure-blind check: 3 extractors × heading lexicon × mutations
+                mutate.py        IR mutations for ats_generic (short name, no research, one job, flat skills)
                 compare.py       side-by-side against the original Claude Design capture
                 extract_roles.py transcribe a design's declarations by matching text, not DOM
                 regression/      known-bad.css — every past defect, for the linter to catch

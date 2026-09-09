@@ -12,7 +12,8 @@
 import { render } from "./render.js";
 import type { ResumeIR, RenderOptions, FitPolicy, Bullet } from "./ir.js";
 
-export type ThemeAssets = { sharedCss: string; themeCss: string; manifest: ThemeManifest };
+/** fontsCss: fonts/fonts.css with url() rewritten to wherever the host serves fonts/. Browsers need it; WeasyPrint does not. */
+export type ThemeAssets = { sharedCss: string; themeCss: string; manifest: ThemeManifest; fontsCss?: string };
 export type ThemeManifest = {
   id: string; profile: "safe" | "expressive"; engine: "css" | "plain";
   defaults?: RenderOptions; baseBodyPx?: number;
@@ -42,7 +43,7 @@ export function buildDocument(ir: ResumeIR, assets: ThemeAssets, opts: RenderOpt
   const r = render(ir, optionsFor(assets, opts, density));
   const html =
     `<!DOCTYPE html><html><head><meta charset="utf-8">` +
-    `<style>${assets.sharedCss}\n${assets.themeCss}</style></head><body>${r.html}</body></html>`;
+    `<style>${assets.fontsCss ?? ""}\n${assets.sharedCss}\n${assets.themeCss}</style></head><body>${r.html}</body></html>`;
   return { html, warnings: r.warnings };
 }
 
@@ -98,14 +99,18 @@ export async function plan(ir: ResumeIR, assets: ThemeAssets, policy: FitPolicy,
   const size = m.page?.size ?? "letter", orient = m.page?.orientation ?? "portrait";
   const pageH = PAGE_PX[size][orient][1];
   const bodyPx = m.baseBodyPx ?? 11;
-  const pt = (d: number) => Math.round(bodyPx * d * 10) / 10;   // WeasyPrint/Chrome: 1 CSS px ≈ 1 PDF pt at 96dpi print
+  const lock = policy.mode !== "original" && policy.minBodyPt != null;
+  const pt = (d: number) => lock ? minBodyPt : Math.round(bodyPx * d * 0.75 * 10) / 10;   // 1 CSS px = 0.75 pt, 실측
   const target = policy.pages ?? 1;
   const minBodyPt = policy.minBodyPt ?? 10;
   const warnings: string[] = [];
 
-  const pagesAt = async (density: number, minPriority?: number) => {
-    const o = { ...opts, filter: { ...(opts.filter ?? {}), ...(minPriority ? { minPriority } : {}) } };
-    const { html, warnings: w } = buildDocument(ir, assets, o, density);
+  // body-lock: minBodyPt 가 있으면 density 는 여백·이름·간격만 줄이고 --body-scale 이 본문을 minBodyPt 에 붙든다.
+  // tools/fit.py 의 BODY_LOCK 과 같은 규칙 — 서버와 브라우저가 같은 답을 낸다.
+  const pagesAt = async (density: number, minPriority?: number, irX: ResumeIR = ir) => {
+    const vars = lock ? { ...(opts.vars ?? {}), "--body-scale": (minBodyPt / (bodyPx * 0.75 * density)).toFixed(4) } : opts.vars;
+    const o = { ...opts, vars, filter: { ...(opts.filter ?? {}), ...(minPriority ? { minPriority } : {}) } };
+    const { html, warnings: w } = buildDocument(irX, assets, o, density);
     for (const x of w) warnings.push(`${x.code}${x.path ? "@" + x.path : ""}`);
     const h = await measure(html);
     return Math.max(1, Math.ceil(h / pageH));
@@ -113,6 +118,7 @@ export async function plan(ir: ResumeIR, assets: ThemeAssets, policy: FitPolicy,
 
   const p0 = await pagesAt(1);
   const atOriginal = { pages: p0, bodyPt: pt(1) };
+  if (pt(1) < minBodyPt) warnings.push(`BODY_BELOW_MIN@density1:${pt(1)}pt<${minBodyPt}pt`);
   const options: PlanOption[] = [];
 
   if (policy.mode === "original" || p0 <= target) {
@@ -121,12 +127,12 @@ export async function plan(ir: ResumeIR, assets: ThemeAssets, policy: FitPolicy,
   }
 
   // floor by policy: don't go below minBodyPt
-  const floor = Math.max(FLOOR, minBodyPt / bodyPx);
+  const floor = lock ? FLOOR : Math.max(FLOOR, minBodyPt / (bodyPx * 0.75));
 
   const search = async (minPriority?: number) => {
     if ((await pagesAt(floor, minPriority)) > target) return null;
     let lo = floor, hi = 1;
-    for (let i = 0; i < 6; i++) {
+    for (let i = 0; i < 5; i++) {   // tools/fit.py STEPS 와 동일
       const mid = (lo + hi) / 2;
       if ((await pagesAt(mid, minPriority)) <= target) lo = mid; else hi = mid;
     }
@@ -156,9 +162,41 @@ export async function plan(ir: ResumeIR, assets: ThemeAssets, policy: FitPolicy,
                best: { density: d, bodyPt: pt(d), pages: target, removed }, options, warnings };
     }
   }
+  // 3. priority 티어가 거칠어 실패하면 top-N 이분탐색 (tools/fit.py 와 동일)
+  const total = (["experiences", "projects", "research"] as const).reduce((n, s) => n + (ir[s] ?? []).reduce((m, x) => m + (x.bullets ?? []).length, 0), 0);
+  let lo = 0, hi = total;
+  while (hi - lo > 1) {
+    const mid = (lo + hi) >> 1;
+    if ((await pagesAt(floor, undefined, keepTop(ir, mid).ir)) <= target) lo = mid; else hi = mid;
+  }
+  if (lo > 0) {
+    const { ir: kept, removed } = keepTop(ir, lo);
+    let dlo = floor, dhi = 1;
+    for (let i = 0; i < 5; i++) { const m = (dlo + dhi) / 2; if ((await pagesAt(m, undefined, kept)) <= target) dlo = m; else dhi = m; }
+    options.push({ kind: "trim", remove: removed, density: dlo, bodyPt: pt(dlo), pages: target });
+    options.push({ kind: "overflow", pages: p0, bodyPt: pt(1) });
+    return { feasible: true, needsChoice: policy.trim === "ask", atOriginal,
+             best: { density: dlo, bodyPt: pt(dlo), pages: target, removed }, options, warnings };
+  }
   options.push({ kind: "overflow", pages: p0, bodyPt: pt(1) });
-  options.push({ kind: "infeasible", reason: "does not fit even at priority ≤ 1 and floor density" });
+  options.push({ kind: "infeasible", reason: "does not fit even with a single bullet at floor density" });
   return { feasible: false, needsChoice: false, atOriginal, options, warnings };
+}
+
+/** Keep the top-N bullets by (priority, document order); returns the trimmed IR and removed paths. */
+export function keepTop(ir: ResumeIR, n: number): { ir: ResumeIR; removed: string[] } {
+  const items: { p: number; sec: "experiences" | "projects" | "research"; i: number; j: number }[] = [];
+  for (const sec of ["experiences", "projects", "research"] as const)
+    (ir[sec] ?? []).forEach((x, i) => (x.bullets ?? []).forEach((b, j) =>
+      items.push({ p: typeof b === "string" ? 99 : ((b as Bullet).priority ?? 99), sec, i, j })));
+  const keep = new Set(items.slice().sort((a, b) => a.p - b.p || a.i - b.i || a.j - b.j).slice(0, n).map((k) => `${k.sec}[${k.i}].bullets[${k.j}]`));
+  const removed: string[] = [];
+  const out: ResumeIR = JSON.parse(JSON.stringify(ir));
+  for (const sec of ["experiences", "projects", "research"] as const)
+    (out[sec] ?? []).forEach((x, i) => {
+      x.bullets = (x.bullets ?? []).filter((_, j) => { const k = `${sec}[${i}].bullets[${j}]`; if (keep.has(k)) return true; removed.push(k); return false; });
+    });
+  return { ir: out, removed };
 }
 
 /** IR paths of bullets with priority > minPriority (what a trim would remove). */

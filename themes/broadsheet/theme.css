@@ -8,10 +8,10 @@ html,body{background:oklch(0.972 0.012 85)}
   --paper:oklch(0.972 0.012 85); --ink:oklch(0.19 0.014 50); --mid:oklch(0.44 0.014 50);
   --faint:oklch(0.56 0.014 50); --accent:oklch(0.44 0.14 28); --rule:oklch(0.82 0.012 50);
   --density:1; --gutter:36px;
-  --fs:calc(10px * var(--density)); --lh:1.36;
-  --fs-name:calc(72px * var(--density)); --fs-sec:calc(9.4px * var(--density));
-  --fs-meta:calc(9.2px * var(--density)); --fs-entry:calc(11.4px * var(--density));
-  --fs-lede:calc(15px * var(--density));
+  --fs:calc(10px * var(--density) * var(--body-scale, 1)); --lh:1.36;
+  --fs-name:calc(72px * var(--density)); --fs-sec:calc(9.4px * var(--density) * var(--body-scale, 1));
+  --fs-meta:calc(9.2px * var(--density) * var(--body-scale, 1)); --fs-entry:calc(11.4px * var(--density) * var(--body-scale, 1));
+  --fs-lede:calc(15px * var(--density) * var(--body-scale, 1));
   --sp-sec:calc(9px * var(--density)); --sp-item:calc(5px * var(--density));
   --sp-bul:calc(2.6px * var(--density)); --rw:1px;
   /* column-span:all 요소가 컨테이너 padding 을 무시하고 페이지 전폭으로 계산된다(실측).
@@ -48,7 +48,7 @@ html,body{background:oklch(0.972 0.012 85)}
 .rz-entry{margin-bottom:var(--sp-item)}
 .rz-entry:last-child{margin-bottom:0}
 
-.rz-section-label{margin:0;font-size:var(--fs-sec);font-weight:700;letter-spacing:.14em;
+.rz-section-label{margin:0;font-size:var(--fs-sec);font-weight:700;letter-spacing:0.08em;
   text-transform:uppercase;color:var(--accent);padding-bottom:3px;border-bottom:var(--rw) solid var(--ink)}
 .rz-entry-head{display:flex;flex-wrap:wrap;align-items:baseline;column-gap:0}
 .rz-title{flex-basis:100%;font-size:var(--fs-entry);font-weight:700}

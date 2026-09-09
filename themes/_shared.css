@@ -11,7 +11,9 @@ html,body{margin:0;padding:0;background:#fff}
 /* 페이지 여백은 @page 가 아니라 .rz 의 padding 으로 만든다.
    design-brief.html 의 .page 에는 padding 이 없으므로, 테마가 넣는 padding 이
    화면과 인쇄에서 동일하게 동작한다. @page margin 을 함께 쓰면 여백이 두 번 적용된다. */
-.rz{padding:54px 60px}
+/* --body-scale: 본문(--fs)만 키우는 축. 디스플레이·간격은 --density 만 따른다.
+   '본문 ≥10pt' 요구는 이름·여백까지 키울 이유가 없다(실측: 균일 확대 시 수용량 급감) */
+.rz{--body-scale:1;padding:54px 60px}
 
 /* ── 견고성 기본값 (fixture 로 도출된 규칙) ── */
 /* 그리드/플렉스 자식이 내용 최소폭에 갇히지 않게 */

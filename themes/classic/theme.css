@@ -3,8 +3,8 @@
   --paper:#fffefb; --ink:#191714; --mid:#4c4740; --faint:#8a837a;
   --accent:oklch(0.36 0.05 45); --rule:rgba(25,23,20,.35);
   --density:1;
-  --fs:calc(12.1px * var(--density)); --lh:1.29;
-  --fs-name:calc(29px * var(--density)); --fs-sec:calc(12.4px * var(--density)); --fs-meta:calc(11.2px * var(--density)); --fs-entry:calc(12.6px * var(--density));
+  --fs:calc(12.1px * var(--density) * var(--body-scale, 1)); --lh:1.29;
+  --fs-name:calc(29px * var(--density)); --fs-sec:calc(12.4px * var(--density) * var(--body-scale, 1)); --fs-meta:calc(11.2px * var(--density) * var(--body-scale, 1)); --fs-entry:calc(12.6px * var(--density) * var(--body-scale, 1));
   --tr-sec:.08em;
   --sp-sec:calc(8px * var(--density)); --sp-item:calc(5.0px * var(--density));
   --sp-bul:calc(2.5px * var(--density)); --rw:1px;

@@ -1,29 +1,26 @@
 /* plain — engine: plain. Artemis 의 무인 auto-apply 경로(fitz.Story) 용.
-   fitz.Story 는 CSS 를 부분 지원한다(flex·grid·커스텀 프로퍼티·의사요소 없음). 그래서 이 테마는
-   블록·인라인·마진·폰트·색만 쓴다. 이 환경엔 PyMuPDF 가 없어 **fitz 에서 미검증** — Artemis 에서
-   첫 렌더 시 확인할 것. WeasyPrint 검증(ATS·시각)은 통과. */
+   fitz.Story 의 CSS 지원 범위가 불확실하므로(이 환경엔 PyMuPDF 없음) 가장 보수적으로 쓴다:
+   블록·인라인·마진·폰트·색·네이티브 리스트만. flex/grid/커스텀 프로퍼티/의사요소 **없음**.
+   구분자가 필요한 자리는 여백으로 대신한다. Artemis 의 fitz 프로브가 이 파일의 유일한 검증이다. */
 .rz{padding:48px 54px;background:#fff;color:#111;font-family:Helvetica,Arial,sans-serif;font-size:10.5px;line-height:1.35}
 .rz-basics{margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid #111}
 .rz-name{margin:0 0 3px;font-size:22px;font-weight:700}
 .rz-headline{margin:0 0 3px;color:#444}
 .rz-contacts{margin:0;padding:0;list-style:none;color:#444}
-.rz-contact{display:inline;white-space:nowrap}
-.rz-contact:not(:last-child)::after{content:"  |  "}
+.rz-contact{display:inline-block;margin-right:14px;white-space:nowrap}
 .rz-section{margin-top:9px}
 .rz-section-label{margin:0 0 4px;font-size:10px;font-weight:700;text-transform:uppercase;padding-bottom:2px;border-bottom:1px solid #999}
 .rz-entries{display:block}
 .rz-entry{margin-bottom:5px}
 .rz-entry-head{display:block}
-.rz-title{font-weight:700}
-.rz-org{color:#444}
-.rz-org::before{content:" — "}
-.rz-dates{display:block;color:#666;font-size:9.5px}
+.rz-title{font-weight:700;margin-right:8px}
+.rz-org{color:#444;margin-right:8px}
+.rz-dates{color:#666;font-size:9.5px}
 .rz-sub,.rz-coursework{margin:1px 0 0;color:#444}
 .rz-kicker{font-weight:700;margin-right:4px}
 .rz-summary,.rz-awards{margin:0}
-.rz-bullets{display:block;margin:2px 0 0;padding:0;list-style:none}
-.rz-bullet{display:block;margin:0 0 2px 12px;text-indent:-12px}
-.rz-bullet::before{content:"• "}
+.rz-bullets{display:block;margin:2px 0 0;padding-left:14px;list-style:disc}
+.rz-bullet{display:list-item;margin:0 0 2px}
 .rz-skills{display:block}
-.rz-skills>.rz-kicker,.rz-skills>.rz-skill-items{display:inline}
-.rz-skills>.rz-skill-items::after{content:"\A";white-space:pre}
+.rz-skills .rz-kicker{display:inline}
+.rz-skills .rz-skill-items{display:block;margin-bottom:2px}

@@ -4,10 +4,10 @@
   --paper:oklch(0.978 0.009 88); --ink:oklch(0.21 0.016 55); --mid:oklch(0.44 0.016 55);
   --faint:oklch(0.58 0.016 55); --accent:oklch(0.46 0.12 30); --rule:oklch(0.85 0.012 55);
   --density:1; --marg:118px; --gutter:20px;
-  --fs:calc(10.2px * var(--density)); --lh:1.36;
-  --fs-name:calc(30px * var(--density)); --fs-sec:calc(10.4px * var(--density));
-  --fs-meta:calc(9px * var(--density)); --fs-entry:calc(11.4px * var(--density));
-  --fs-lede:calc(12.2px * var(--density));
+  --fs:calc(10.2px * var(--density) * var(--body-scale, 1)); --lh:1.36;
+  --fs-name:calc(30px * var(--density)); --fs-sec:calc(10.4px * var(--density) * var(--body-scale, 1));
+  --fs-meta:calc(9px * var(--density) * var(--body-scale, 1)); --fs-entry:calc(11.4px * var(--density) * var(--body-scale, 1));
+  --fs-lede:calc(12.2px * var(--density) * var(--body-scale, 1));
   --sp-sec:calc(8px * var(--density)); --sp-item:calc(5px * var(--density));
   --sp-bul:calc(2px * var(--density)); --rw:1px;
   padding:calc(44px * var(--density)) calc(44px * var(--density));
@@ -34,11 +34,13 @@
   padding-top:var(--sp-sec);margin-top:var(--sp-sec);border-top:var(--rw) solid var(--rule)}
 .rz-section-label{grid-column:1;grid-row:1;margin:0;font-family:'Newsreader','Source Serif 4',Georgia,serif;
   font-style:italic;font-size:var(--fs-sec);font-weight:400;color:var(--accent)}
-.rz-entries{grid-column:2;grid-row:1;display:flex;flex-direction:column;gap:var(--sp-item);
+/* W13: flex 컬럼 안의 grid 자식(.rz-entry-head)에 유령 높이 ~1줄이 붙는다(실측) — entries 를 block 으로 */
+.rz-entries{grid-column:2;grid-row:1;display:block;;
+.rz-entry{margin-bottom:var(--sp-item)}
+.rz-entry:last-child{margin-bottom:0}
   padding-top:calc(var(--fs-sec) * 1.55)}
-.rz-section[data-section="summary"] .rz-entries,
-.rz-section[data-section="skills"] .rz-entries,
-.rz-section[data-section="awards"] .rz-entries{padding-top:0}
+/* skills·awards 도 라벨 한 줄만큼 내린다 — 같은 줄에 있으면 일반 헤딩 매처가 라벨을 못 본다(실측) */
+.rz-section[data-section="summary"] .rz-entries{padding-top:0}
 /* 날짜를 마진 레일로: entry-head 를 음수 마진으로 당겨 2열 그리드 (display:contents 미지원) */
 .rz-entry-head{display:grid;grid-template-columns:calc(var(--marg) - var(--gutter)) minmax(0,1fr);
   column-gap:var(--gutter);margin-left:calc(var(--marg) * -1);align-items:start}

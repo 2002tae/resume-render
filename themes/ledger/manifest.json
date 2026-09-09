@@ -34,11 +34,18 @@
   "fonts": [
     {
       "family": "IBM Plex Mono",
-      "license": "OFL"
+      "license": "OFL",
+      "files": [
+        "IBMPlexMono.ttf"
+      ]
     },
     {
       "family": "Source Serif 4",
-      "license": "OFL"
+      "license": "OFL",
+      "files": [
+        "SourceSerif4-Italic.ttf",
+        "SourceSerif4.ttf"
+      ]
     }
   ],
   "ats": {
@@ -56,12 +63,20 @@
       "pdftotext -layout",
       "pdftotext"
     ],
-    "checkedAt": "2026-09-08",
+    "checkedAt": "2026-09-09",
     "note": "Text-layer integrity, not a vendor guarantee. See docs/template-contract.md \u00a75."
   },
   "baseBodyPx": 11.0,
-  "note_baseBodyPx": "\ubcf8\ubb38 --fs \uc758 density=1 \uae30\uc900\uac12. bodyPt \u2248 baseBodyPx \u00d7 density (WeasyPrint \ub294 CSS px \ub97c PDF pt \ub85c 1:1 \uc500, \uc2e4\uce21)",
+  "note_baseBodyPx": "\ubcf8\ubb38 --fs \uc758 density=1 \uae30\uc900 px. bodyPt = baseBodyPx \u00d7 density \u00d7 bodyScale \u00d7 0.75 (\uc2e4\uce21: 12px \u2192 9.0pt)",
   "limits": {
-    "summaryChars": 400
+    "summaryChars": 400,
+    "skillLabelChars": 18
+  },
+  "capacity": {
+    "bulletsAt1Page": {
+      "bodyPt10": 5
+    },
+    "measuredWith": "dense fixture, no summary, 4 skill groups, tools/fit.py --min-body-pt 10",
+    "note": "\ubcf8\ubb38 10pt \uace0\uc815\u00b71\ud398\uc774\uc9c0\uc5d0\uc11c priority \uc21c\uc73c\ub85c \ub0a8\ub294 bullet \uc218. tailoring \ud504\ub86c\ud504\ud2b8\uc758 \ubd84\ub7c9 \ud78c\ud2b8\ub85c \uc4f8 \uac83. \uc694\uc57d\uc744 \ub123\uc73c\uba74 1\u20133 \uc904\uc5b4\ub4e0\ub2e4."
   }
 }

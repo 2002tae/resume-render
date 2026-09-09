@@ -25,8 +25,6 @@ Run from a **fresh extract**, not the working tree. Every item below was checked
 - Markdown parser.
 - Paged.js preview — `mount()` uses a plain iframe; the browser's own pagination is what prints.
 
-## Artemis integration (separate track, not blocked by this release)
-- `GET /resume-templates` from `themes/*/manifest.json` (wire format in docs/template-contract.md §6).
-- Add `plain` engine template for the unattended fitz path.
-- Web/extension import `dist/index.js`, render with manifest `defaults`, print via browser.
-- `plan()` port to browser (measure `.rz` height in DOM).
+## Consumer integration
+Integration notes for specific consumers live in their own repos, not here. This repo ships the
+library, themes, manifests (`themes/*/manifest.json` is the wire format) and the browser adapter.

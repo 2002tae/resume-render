@@ -20,14 +20,22 @@ sys.path.insert(0, str(ROOT / "tools"))
 from ats_check import render_ts, to_pdf  # noqa
 
 FLOOR = 0.82
-STEPS = 4           # 이분탐색 반복 — 0.18 범위를 ~0.003 정밀도로
+STEPS = 5   # browser plan() 과 동일 — fit.py 가 기준
+PX2PT = 0.75   # CSS px → PDF pt (실측: 12px → 9.0pt)           # 이분탐색 반복 — 0.18 범위를 ~0.003 정밀도로
 
 EXTRA_OPTS = {}   # --opts '<json>' 로 주입 (예: {"sections":{"exclude":["summary"]}})
+
+BODY_LOCK = None   # (base_px, min_pt) — 설정되면 density 가 줄어도 본문은 min_pt 로 고정
 
 def render_opts(ir, density, min_priority, theme=None):
     if theme:
         from render_theme import render as _r
-        return _r(ir, theme, density, min_priority, EXTRA_OPTS)
+        extra = EXTRA_OPTS
+        if BODY_LOCK:
+            base, minpt = BODY_LOCK
+            bs = minpt / (base * PX2PT * density)
+            extra = {**EXTRA_OPTS, "vars": {**EXTRA_OPTS.get("vars", {}), "--body-scale": f"{bs:.4f}"}}
+        return _r(ir, theme, density, min_priority, extra)
     js = f"""
     import {{ render }} from '{ROOT/"dist/index.js"}';
     const ir = JSON.parse(process.argv[1]);
@@ -64,20 +72,39 @@ def try_render(ir, theme, density, min_priority, out):
             p = 99  # 잘림 = 안 들어감으로 취급
     return p, r["warnings"]
 
-def fit(ir, theme, target, out, log):
-    """returns dict(density, minPriority, pages, fitted, warnings)"""
+def fit(ir, theme, target, out, log, min_body_pt=None):
+    """returns dict(density, minPriority, pages, fitted, warnings, bodyPt)"""
+    man = json.loads((ROOT/"themes"/theme/"manifest.json").read_text())
+    base = man.get("baseBodyPx") or 11
+    global BODY_LOCK
+    if min_body_pt:
+        # 본문 고정 모드: density 는 여백·이름·간격만 줄이고 body-scale 이 본문을 min_pt 로 붙든다
+        BODY_LOCK = (base, min_body_pt); floor = FLOOR; top = 1.0
+        pt = lambda d: float(min_body_pt)
+    else:
+        BODY_LOCK = None; floor = FLOOR; top = 1.0
+        pt = lambda d: round(base * d * PX2PT, 1)
     trimmed = 0
     for min_priority in (None, 5, 4, 3, 2, 1):
         # density 이분탐색: lo 는 들어감(있으면), hi 는 안 들어감
-        p, w = try_render(ir, theme, 1.0, min_priority, out)
-        log(f"  prio≤{min_priority or '∞'}  density=1.000 → {p}p")
+        start = max(1.0, floor)
+        p, w = try_render(ir, theme, start, min_priority, out)
+        log(f"  prio≤{min_priority or '∞'}  density={start:.3f} → {p}p")
         if p <= target:
-            return dict(density=1.0, minPriority=min_priority, pages=p, fitted=True, warnings=w)
-        p, w = try_render(ir, theme, FLOOR, min_priority, out)
-        log(f"  prio≤{min_priority or '∞'}  density={FLOOR:.3f} → {p}p")
+            # 들어가면 더 키울 여지 탐색 (top 까지)
+            lo, hi = start, top
+            for _ in range(STEPS):
+                mid = (lo + hi) / 2
+                p2, _ = try_render(ir, theme, mid, min_priority, out)
+                if p2 <= target: lo = mid
+                else: hi = mid
+            p, w = try_render(ir, theme, lo, min_priority, out)
+            return dict(density=round(lo,3), minPriority=min_priority, pages=p, fitted=True, warnings=w, bodyPt=pt(lo))
+        p, w = try_render(ir, theme, floor, min_priority, out)
+        log(f"  prio≤{min_priority or '∞'}  density={floor:.3f} → {p}p")
         if p > target:
             continue                      # floor 에서도 안 들어감 → 절삭 단계로
-        lo, hi = FLOOR, 1.0               # lo 는 들어감, hi 는 안 들어감
+        lo, hi = floor, start             # lo 는 들어감, hi 는 안 들어감
         for _ in range(STEPS):
             mid = (lo + hi) / 2
             p, w = try_render(ir, theme, mid, min_priority, out)
@@ -85,16 +112,37 @@ def fit(ir, theme, target, out, log):
             else: hi = mid
         p, w = try_render(ir, theme, lo, min_priority, out)
         log(f"  prio≤{min_priority or '∞'}  density={lo:.3f} → {p}p  ✓")
-        return dict(density=round(lo,3), minPriority=min_priority, pages=p, fitted=True, warnings=w)
-    p, w = try_render(ir, theme, FLOOR, 2, out)
-    return dict(density=FLOOR, minPriority=2, pages=p, fitted=False, warnings=w + [
-        {"code":"FIT_FAILED","message":f"still {p} pages at density {FLOOR} with priority ≤2"}])
+        return dict(density=round(lo,3), minPriority=min_priority, pages=p, fitted=True, warnings=w, bodyPt=pt(lo))
+    # 마지막 단계: priority 티어가 거칠어 실패하면 top-N(priority 순·원문 순) 이분탐색 — 정확한 N 을 찾는다
+    from capacity import keep_top
+    total = sum(len(x.get("bullets", [])) for sec in ("experiences","projects","research") for x in ir.get(sec, []))
+    lo, hi = 0, total
+    while hi - lo > 1:
+        mid = (lo + hi) // 2
+        p, _ = try_render(keep_top(ir, mid), theme, floor, None, out)
+        if p <= target: lo = mid
+        else: hi = mid
+    if lo > 0:
+        # 찾은 N 에서 density 를 다시 최대한 키운다
+        d_lo, d_hi = floor, 1.0
+        for _ in range(STEPS):
+            m = (d_lo + d_hi) / 2
+            p2, _ = try_render(keep_top(ir, lo), theme, m, None, out)
+            if p2 <= target: d_lo = m
+            else: d_hi = m
+        p, w = try_render(keep_top(ir, lo), theme, d_lo, None, out)
+        log(f"  top-{lo} bullets  density={d_lo:.3f} → {p}p  ✓")
+        return dict(density=round(d_lo,3), minPriority=None, topN=lo, pages=p, fitted=True, bodyPt=pt(d_lo), warnings=w)
+    p, w = try_render(ir, theme, floor, 1, out)
+    return dict(density=round(floor,3), minPriority=1, pages=p, fitted=False, bodyPt=pt(floor), warnings=w + [
+        {"code":"FIT_FAILED","message":f"still {p} pages at density {floor:.3f} even with 1 bullet"}])
 
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("ir"); ap.add_argument("--theme"); ap.add_argument("--all", action="store_true")
     ap.add_argument("--pages", type=int, default=1); ap.add_argument("--out"); ap.add_argument("--outdir")
     ap.add_argument("-q", action="store_true"); ap.add_argument("--opts", default="{}")
+    ap.add_argument("--min-body-pt", type=float, default=None)
     a = ap.parse_args()
     ir = json.loads(pathlib.Path(a.ir).read_text())
     global EXTRA_OPTS; EXTRA_OPTS = json.loads(a.opts)
@@ -105,10 +153,11 @@ def main():
     for t in themes:
         out = pathlib.Path(a.out) if (a.out and not a.all) else outdir / f"{t}.pdf"
         log(f"[{t}]")
-        r = fit(ir, t, a.pages, out, log)
+        r = fit(ir, t, a.pages, out, log, a.min_body_pt)
         results[t] = r
         tag = "✓" if r["fitted"] else "✗ FIT_FAILED"
-        print(f"{t:18s} density={r['density']:.3f} prio≤{r['minPriority'] or '∞':<2} → {r['pages']}p {tag}")
+        trim = f"top-{r['topN']}" if r.get("topN") else f"prio≤{r['minPriority'] or '∞'}"
+        print(f"{t:18s} density={r['density']:.3f} {trim:7s} body={r['bodyPt']:4.1f}pt → {r['pages']}p {tag}")
     (outdir / "fit-report.json").write_text(json.dumps(results, indent=2))
 
 if __name__ == "__main__":

@@ -90,8 +90,9 @@ export function render(ir: ResumeIR, opts: RenderOptions = {}): RenderResult {
     // 위치, projects 의 org 슬롯은 role 이라 뒤집으면 뜻이 깨진다. DOM 순서를 바꾸므로 추출 순서도 같이 바뀐다.
     const t = `<span class="rz-title">${esc(title)}</span>`;
     const o = org ? `<span class="rz-org">${esc(org)}</span>` : "";
-    const parts = allowOrgFirst && opts.layout?.orgFirst && o ? [o, t] : [t, ...(o ? [o] : [])];
-    if (dates) parts.push(`<span class="rz-dates" data-raw="${esc(dates)}">${esc(dates)}</span>`);
+    const d = dates ? `<span class="rz-dates" data-raw="${esc(dates)}">${esc(dates)}</span>` : "";
+    // orgFirst 는 org·dates·title 순: 날짜가 org 와 같은 줄 흐름에 있어야 pdfminer 류가 떼어내지 않는다(실측)
+    const parts = allowOrgFirst && opts.layout?.orgFirst && o ? [o, d, t] : [t, ...(o ? [o] : []), d];
     return `<div class="rz-entry-head">${parts.join("")}</div>`;
   };
 

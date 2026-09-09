@@ -6,10 +6,10 @@
   --faint:oklch(0.58 0.02 30); --accent:oklch(0.47 0.15 25); --rule:oklch(0.84 0.02 60);
   --field:oklch(0.30 0.09 25); --on-field:oklch(0.95 0.02 60); --on-field-dim:oklch(0.86 0.05 40);
   --density:1;
-  --fs:calc(10.4px * var(--density)); --lh:1.38;
-  --fs-name:calc(50px * var(--density)); --fs-sec:calc(10px * var(--density));
-  --fs-meta:calc(11.2px * var(--density)); --fs-entry:calc(11.8px * var(--density));
-  --fs-lede:calc(11.8px * var(--density));
+  --fs:calc(10.4px * var(--density) * var(--body-scale, 1)); --lh:1.38;
+  --fs-name:calc(50px * var(--density)); --fs-sec:calc(10px * var(--density) * var(--body-scale, 1));
+  --fs-meta:calc(11.2px * var(--density) * var(--body-scale, 1)); --fs-entry:calc(11.8px * var(--density) * var(--body-scale, 1));
+  --fs-lede:calc(11.8px * var(--density) * var(--body-scale, 1));
   --sp-sec:calc(8px * var(--density)); --sp-item:calc(4.5px * var(--density));
   --sp-bul:calc(2.2px * var(--density)); --rw:1px;
   padding:0 0 calc(40px * var(--density)); background:var(--paper); color:var(--ink);
@@ -37,7 +37,7 @@
 .rz-section{display:flex;flex-direction:column;gap:var(--sp-item);
   padding:var(--sp-sec) calc(48px * var(--density)) 0}
 .rz-section-label{margin:0;font-family:'EB Garamond',Georgia,serif;font-size:var(--fs-sec);
-  font-weight:500;letter-spacing:.24em;text-transform:uppercase;color:var(--accent)}
+  font-weight:500;letter-spacing:0.08em;text-transform:uppercase;color:var(--accent)}
 .rz-entries{display:flex;flex-direction:column;gap:var(--sp-item)}
 .rz-entry-head{display:flex;flex-wrap:wrap;align-items:baseline;column-gap:7px}
 .rz-title{font-family:'Bodoni Moda',Didot,serif;font-size:var(--fs-entry);font-weight:500}

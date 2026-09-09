@@ -33,19 +33,26 @@
   },
   "fonts": [
     {
-      "family": "Archivo",
-      "license": "OFL"
+      "family": "ArchivoCond",
+      "license": "OFL",
+      "files": [
+        "ArchivoCond.ttf"
+      ]
     },
     {
       "family": "Libre Franklin",
-      "license": "OFL"
+      "license": "OFL",
+      "files": [
+        "LibreFranklin-Italic.ttf",
+        "LibreFranklin.ttf"
+      ]
     }
   ],
   "ats": {
     "verified": false,
     "textComplete": true,
     "orderPreserved": "none",
-    "interleaveWarnings": 6,
+    "interleaveWarnings": 7,
     "fixtures": [
       "dense",
       "minimal",
@@ -56,16 +63,17 @@
       "pdftotext -layout",
       "pdftotext"
     ],
-    "checkedAt": "2026-09-08",
+    "checkedAt": "2026-09-09",
     "note": "Text-layer integrity, not a vendor guarantee. See docs/template-contract.md \u00a75."
   },
   "limits": {
     "nameMaxChars": 16,
     "note": "72px \uc555\ucd95 \uc774\ub984 \uae30\uc900. \ub354 \uae34 \ub2e8\uc5b4\ub294 fit \uc774 --fs-name \uc744 \uc904\uc5ec\uc57c \ud55c\ub2e4",
-    "summaryChars": 400
+    "summaryChars": 400,
+    "skillLabelChars": 18
   },
-  "baseBodyPx": 10.8,
-  "note_baseBodyPx": "\ubcf8\ubb38 --fs \uc758 density=1 \uae30\uc900\uac12. bodyPt \u2248 baseBodyPx \u00d7 density (WeasyPrint \ub294 CSS px \ub97c PDF pt \ub85c 1:1 \uc500, \uc2e4\uce21)",
+  "baseBodyPx": 10.0,
+  "note_baseBodyPx": "\ubcf8\ubb38 --fs \uc758 density=1 \uae30\uc900 px. bodyPt = baseBodyPx \u00d7 density \u00d7 bodyScale \u00d7 0.75 (\uc2e4\uce21: 12px \u2192 9.0pt)",
   "pages": {
     "supports": [
       1
@@ -86,7 +94,10 @@
     }
   },
   "capacity": {
-    "bulletsAt1Page": 13,
-    "note": "\uc2e4\uce21: 17 bullet \uc740 Projects \uac00 \uc6b0\uce21 \uceec\ub7fc\uc73c\ub85c \ub118\uce5c\ub2e4. \uc6d0\ubcf8 \uce94\ubc84\uc2a4\ub294 12 bullet. tailoring \uc774 priority \ub85c 13 \uc774\ud558\ub97c \ubaa9\ud45c\ub85c \ud560 \uac83"
+    "bulletsAt1Page": {
+      "bodyPt10": 8
+    },
+    "measuredWith": "dense fixture, no summary, 4 skill groups, tools/fit.py --min-body-pt 10",
+    "note": "\ubcf8\ubb38 10pt \uace0\uc815\u00b71\ud398\uc774\uc9c0\uc5d0\uc11c priority \uc21c\uc73c\ub85c \ub0a8\ub294 bullet \uc218. tailoring \ud504\ub86c\ud504\ud2b8\uc758 \ubd84\ub7c9 \ud78c\ud2b8\ub85c \uc4f8 \uac83. \uc694\uc57d\uc744 \ub123\uc73c\uba74 1\u20133 \uc904\uc5b4\ub4e0\ub2e4."
   }
 }

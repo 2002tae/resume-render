@@ -2,9 +2,9 @@
 .rz{
   --paper:#fff; --ink:#000; --mid:#4a4a4a; --faint:#6e6e6e; --accent:#000;
   --density:1;
-  --fs:calc(11.5px * var(--density)); --lh:1.34;
-  --fs-name:calc(40px * var(--density)); --fs-sec:calc(11px * var(--density)); --fs-meta:calc(10.2px * var(--density)); --fs-entry:calc(12.4px * var(--density));
-  --tr-sec:.24em;
+  --fs:calc(11.5px * var(--density) * var(--body-scale, 1)); --lh:1.34;
+  --fs-name:calc(40px * var(--density)); --fs-sec:calc(11px * var(--density) * var(--body-scale, 1)); --fs-meta:calc(10.2px * var(--density) * var(--body-scale, 1)); --fs-entry:calc(12.4px * var(--density) * var(--body-scale, 1));
+  --tr-sec:0.08em;
   --sp-sec:calc(8.0px * var(--density)); --sp-item:calc(5.0px * var(--density));
   --sp-bul:calc(2.5px * var(--density));
   padding:calc(48px * var(--density)); background:var(--paper); color:var(--ink);

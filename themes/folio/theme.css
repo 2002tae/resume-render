@@ -4,10 +4,10 @@
   --paper:oklch(0.968 0.014 96); --ink:oklch(0.18 0.012 70); --mid:oklch(0.43 0.012 70);
   --faint:oklch(0.57 0.012 70); --accent:oklch(0.47 0.16 35); --rule:oklch(0.84 0.012 70);
   --density:1;
-  --fs:calc(10.6px * var(--density)); --lh:1.36;
-  --fs-name:calc(38px * var(--density)); --fs-sec:calc(11px * var(--density));
-  --fs-meta:calc(9.4px * var(--density)); --fs-entry:calc(11.2px * var(--density));
-  --fs-lede:calc(11px * var(--density));
+  --fs:calc(10.6px * var(--density) * var(--body-scale, 1)); --lh:1.36;
+  --fs-name:calc(38px * var(--density)); --fs-sec:calc(11px * var(--density) * var(--body-scale, 1));
+  --fs-meta:calc(9.4px * var(--density) * var(--body-scale, 1)); --fs-entry:calc(11.2px * var(--density) * var(--body-scale, 1));
+  --fs-lede:calc(11px * var(--density) * var(--body-scale, 1));
   --sp-sec:calc(7px * var(--density)); --sp-item:calc(4.5px * var(--density));
   --sp-bul:calc(2.4px * var(--density)); --rw:1px;
   padding:calc(40px * var(--density)) calc(42px * var(--density));

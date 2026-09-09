@@ -2,8 +2,8 @@
 .rz{
   --paper:#fffffd; --ink:#171614; --mid:#4d4a44; --faint:#8b877f;
   --accent:#171614; --rule:rgba(23,22,20,.5); --density:1;
-  --fs:calc(10.9px * var(--density)); --lh:1.3;
-  --fs-name:calc(27px * var(--density)); --fs-sec:calc(10.6px * var(--density)); --fs-meta:calc(10.4px * var(--density)); --fs-entry:calc(12px * var(--density)); --tr-sec:.2em;
+  --fs:calc(10.9px * var(--density) * var(--body-scale, 1)); --lh:1.3;
+  --fs-name:calc(27px * var(--density)); --fs-sec:calc(10.6px * var(--density) * var(--body-scale, 1)); --fs-meta:calc(10.4px * var(--density) * var(--body-scale, 1)); --fs-entry:calc(12px * var(--density) * var(--body-scale, 1)); --tr-sec:0.08em;
   --sp-sec:calc(7px * var(--density)); --sp-item:calc(5px * var(--density));
   --sp-bul:calc(2px * var(--density)); --rw:1px;
   padding:calc(46px * var(--density)) calc(46px * var(--density)) calc(54px * var(--density));
@@ -23,24 +23,31 @@
 .rz-contact[data-kind="phone"]::after{content:""}
 .rz-contact[data-kind="linkedin"]::before{content:"\A";white-space:pre}
 .rz-contact[data-kind="phone"]+.rz-contact[data-kind="github"]::before{content:"\A";white-space:pre}
-.rz-section{display:flex;flex-direction:column;gap:var(--sp-item);padding-top:var(--sp-sec)}
+/* W13: grid 를 품은 flex 아이템에 유령 높이 — 섹션도 block */
+.rz-section{display:block;padding-top:var(--sp-sec)}
+.rz-section-label{margin-bottom:var(--sp-item)}
 .rz-section-label{margin:0;font-size:var(--fs-sec);font-weight:400;letter-spacing:var(--tr-sec);
   text-transform:uppercase;text-align:center;padding-bottom:3px;
   border-bottom:var(--rw) solid var(--rule)}
-.rz-entries{display:flex;flex-direction:column;gap:var(--sp-item)}
-.rz-entry-head{display:grid;grid-template-columns:minmax(0,1fr) auto;column-gap:7px;align-items:baseline}
+/* W13: flex 컬럼 안의 grid 자식(.rz-entry-head)에 유령 높이 ~1줄이 붙는다(실측) — entries 를 block 으로 */
+.rz-entries{display:block;}
+.rz-entry{margin-bottom:var(--sp-item)}
+.rz-entry:last-child{margin-bottom:0}
+/* flex 헤드: 그리드로 날짜를 우측 열에 두면 pdfminer 가 날짜를 별도 박스로 떼어내 항목 식별 실패(실측) */
+.rz-entry-head{display:flex;flex-wrap:wrap;align-items:baseline;column-gap:7px}
 /* 원본 CV 는 기관명이 굵은 표제, 직함이 그 아래 이탤릭이다. 정규 HTML 은 title→org 순서이고
    order 로 뒤집으면 읽기 순서가 DOM 과 어긋난다(R6). 순서는 지키고 시각 강조만 CV 관례대로.
    진짜 뒤집기는 CSS 가 아니라 IR/렌더러 옵션이 할 일이다 — 계약 미결 항목 T-6. */
 /* orgFirst: org 가 굵은 표제(날짜와 같은 줄), title 은 다음 줄 이탤릭 — 그리드 행 명시(order 불사용) */
-.rz-title{grid-column:1;grid-row:1;font-size:var(--fs-entry);font-weight:600;color:var(--ink)}
-.rz-org{grid-column:1;grid-row:2;font-style:italic;color:var(--mid)}
-.rz-dates{grid-column:2;grid-row:1}
-/* experiences·research 는 DOM 이 org→title 이므로 역할을 바꾼다 */
+.rz-title{font-size:var(--fs-entry);font-weight:600;color:var(--ink)}
+/* education·projects: 제목 · 소속 · 날짜 한 줄 (원본). basis 100% 는 날짜를 3줄째로 밀었다(실측) */
+.rz-org{font-style:italic;color:var(--mid)}
+.rz-dates{margin-left:auto}
+/* experiences·research 는 DOM 이 org→dates→title: org 굵게 + 날짜 우측, title 은 둘째 줄 이탤릭 */
 .rz-section[data-section="experiences"] .rz-org,
-.rz-section[data-section="research"] .rz-org{grid-row:1;font-size:var(--fs-entry);font-weight:600;font-style:normal;color:var(--ink)}
+.rz-section[data-section="research"] .rz-org{flex-basis:auto;font-size:var(--fs-entry);font-weight:600;font-style:normal;color:var(--ink)}
 .rz-section[data-section="experiences"] .rz-title,
-.rz-section[data-section="research"] .rz-title{grid-column:1 / span 2;grid-row:2;font-style:italic;font-weight:400;color:var(--mid);font-size:var(--fs)}
+.rz-section[data-section="research"] .rz-title{flex-basis:100%;font-style:italic;font-weight:400;color:var(--mid);font-size:var(--fs)}
 .rz-dates{font-size:var(--fs-meta);color:var(--faint);white-space:nowrap}
 .rz-sub,.rz-coursework{margin:1px 0 0;color:var(--mid)}
 .rz-kicker{font-style:italic;color:var(--mid);margin-right:5px}

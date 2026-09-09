@@ -317,6 +317,9 @@ SECTION_EMPTY       섹션에 렌더할 내용 없음 → 섹션 생략
 
 ## §6. 와이어 포맷 — `GET /resume-templates`
 
+> **정정:** 아래의 mock id(modern/compact/technical) 유지 문구는 낡았다. `GET /resume-templates` 는 `themes/*/manifest.json` **13개를 가공 없이** 반환한다. 존재하지 않는 id 는 없다.
+
+
 서버가 반환하는 건 매니페스트의 **부분집합**이다. `defaults` 내부나 폰트 경로는 클라이언트에 불필요.
 
 ```ts
@@ -410,6 +413,8 @@ POST /resume-tailor/render
 | W10 | `::after{flex:1}` 은 부모가 flex 컨테이너일 때만 늘어남 | 점선 리더는 org 자체를 `display:flex` 로 |
 | W11 | 다단 오버플로는 페이지를 늘리지 않고 잘림 | fit 은 페이지 수 + 마지막 문자열 존재로 판정 |
 | W12 | `break-inside:avoid` 엔트리가 페이지 경계에 걸리면 통째로 소실 | 불릿 단위로만 보호 |
+| W13 | flex 컬럼 아이템이 grid 자손을 품으면 ~1줄 유령 높이 (가장 가까운 flex 조상 아이템에 붙음) | grid 헤드를 쓰는 테마는 섹션·엔트리를 `block` |
+| W14 | (추출기) pdfminer 가 세로로 가까운 **우측 정렬 날짜**들을 한 텍스트 박스로 묶어 다른 위치에 뱉는다 | 우측 정렬 날짜 디자인의 고유 리스크. ATS 최대 안전은 인라인 날짜(`plain`) |
 
 ## §11. 린트 규칙 추가분
 
@@ -419,9 +424,39 @@ POST /resume-tailor/render
 | R9 | `display:contents` 금지 | W3 |
 | R10 | 불릿 마커에 텍스트 글리프(`content:"·"`) 금지 — CSS 박스로 | stream 추출에서 `workday,·smartrecruiters` 삽입 실측 |
 | R4' | 음수 자간은 경고 | W8 |
+| R4'' | **양수 자간 0.08em 초과 금지 — 섹션 라벨 예외 없음** | 4 엔진 실측: 0.08em 안전, 0.1em 부터 poppler·pdfminer 가 `E D U C A T I O N` 으로 분리 → 헤딩 매처 실패 |
 
 ## §12. 검사기가 매니페스트 defaults 를 쓴다 (감사 후 정정)
 
 `ats_check.py` 는 처음엔 기본 순서·기본 라벨로만 렌더해 검사했다 — 즉 `ats.verified` 가 **배포 구성이 아닌 것**을
 검증한 값이었다. 지금은 `render_theme.py` 로 매니페스트 `defaults`(순서·라벨·layout) 를 적용해 렌더하고,
 기대 문자열 순서도 그 순서를 따른다.
+
+---
+
+## §13. 단위 정정 — CSS px → PDF pt 는 ×0.75
+
+이전 문서와 보고에서 "본문 10pt" 로 적힌 값들은 `pdftotext -bbox` 의 글자 박스 높이(어센더+디센더)를 읽은 것이라
+**실제 폰트 크기보다 ~30% 크다.** pdfminer `LTChar.size` 로 실측: CSS 12px → 9.0pt. 따라서
+`bodyPt = baseBodyPx × density × bodyScale × 0.75`. `plan()`·`fit.py`·매니페스트 주석 전부 이 식으로 정정했다.
+
+## §14. 두 개의 축 — `--density` 와 `--body-scale`
+
+- `--density`: 모든 크기·간격 균일 스케일. **줄이는** 방향에 쓴다 (1페이지 맞춤).
+- `--body-scale`: 본문·제목·메타·라벨(`--fs`, `--fs-entry`, `--fs-meta`, `--fs-sec`, `--fs-lede`)만. 이름·여백·간격은 안 건드린다.
+  **키우는** 방향에 쓴다 ("본문 ≥10pt"). 균일 확대는 이름·여백까지 커져 수용량이 급감한다(실측: numerals 0 bullet).
+- body-lock 모드(`minBodyPt`): `density` 로 여백을 줄이면서 `bodyScale = minPt / (base × 0.75 × density)` 로 본문을 고정한다.
+  `tools/fit.py` 와 `src/browser.ts plan()` 이 같은 식을 쓴다.
+
+## §15. 구조를 모르는 파서로 잰 식별성 (tools/ats_generic.py)
+
+`ats_check.py` 는 IR 과 `rz-*` 를 알아 편향된다. `ats_generic.py` 는 헤딩 사전·정규식만으로 3개 엔진
+(poppler · pdfminer.six · pypdf)의 텍스트를 읽고, 변이 4종(짧은 이름 · 연구/수상 없음 · 경력 1개 · 평면 스킬)으로 흔든다.
+
+| 등급 | 테마 | 원인 |
+|---|---|---|
+| A | plain · classic · standfirst · ledger · numerals · minimal · folio · marginalia | 3 엔진 × 5 케이스 전부 식별 |
+| B | academic · masthead · colorfield | W14 — pdfminer 가 우측 정렬 날짜 하나를 다른 엔트리에 붙임 (poppler·pypdf 정상) |
+| B~C | broadsheet · spread | poppler `-layout` 이 컬럼을 섞음. 다단의 대가 |
+
+이 등급이 나오기 전엔 A 가 2종뿐이었다 — 원인은 라벨 자간(R4'')이었고, 편향된 검사기가 그걸 통과시키고 있었다.

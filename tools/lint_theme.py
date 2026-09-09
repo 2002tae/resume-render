@@ -71,9 +71,11 @@ def lint(path):
                 if _m and float(_m.group(1)) > 0:
                     warn("R4-LETTERSPACING-TIGHT",
                          f"작은 양수 자간 — 실측상 안전하나 ATS 스위트로 확인할 것 ({_ls})", sel)
-            elif re.search(r"::(before|after)", sel):
-                warn("R4-LETTERSPACING-PSEUDO",
-                     f"의사요소 자간 — 장식 텍스트지만 추출에 나타나므로 확인할 것 ({_ls})", sel)
+            elif _m and float(_m.group(1)) > 0.08:
+                # 실측(4 엔진): 0.08em 까지 안전, 0.1em 부터 poppler·pdfminer 가 'E D U C A T I O N' 으로 분리.
+                # 섹션 라벨 예외는 없다 — 일반 ATS 헤딩 매처가 그 문자열을 못 읽는다.
+                err("R4-LETTERSPACING-CAP",
+                    f"자간 {_ls} > 0.08em — 헤딩이 글자 단위로 분리되어 섹션 식별 실패 (실측)", sel)
             elif not base or not set(base) & LETTERSPACING_OK:
                 err("R4-LETTERSPACING",
                     f"본문급 요소의 letter-spacing 은 'C O U R S E W O R K' 분리를 유발한다 "

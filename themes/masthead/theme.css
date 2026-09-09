@@ -5,10 +5,10 @@
   --paper:oklch(0.985 0.008 90); --ink:oklch(0.17 0.012 50); --mid:oklch(0.43 0.012 50);
   --faint:oklch(0.57 0.012 50); --accent:oklch(0.42 0.13 25); --rule:oklch(0.83 0.012 50);
   --density:1;
-  --fs:calc(10.4px * var(--density)); --lh:1.4;
-  --fs-name:calc(50px * var(--density)); --fs-sec:calc(9.2px * var(--density));
-  --fs-meta:calc(9.6px * var(--density)); --fs-entry:calc(13.2px * var(--density));
-  --fs-lede:calc(11.4px * var(--density));
+  --fs:calc(10.4px * var(--density) * var(--body-scale, 1)); --lh:1.4;
+  --fs-name:calc(50px * var(--density)); --fs-sec:calc(9.2px * var(--density) * var(--body-scale, 1));
+  --fs-meta:calc(9.6px * var(--density) * var(--body-scale, 1)); --fs-entry:calc(13.2px * var(--density) * var(--body-scale, 1));
+  --fs-lede:calc(11.4px * var(--density) * var(--body-scale, 1));
   --sp-sec:calc(6px * var(--density)); --sp-item:calc(4.5px * var(--density));
   --sp-bul:calc(2.2px * var(--density)); --rw:1px;
   padding:calc(40px * var(--density)) calc(44px * var(--density));
@@ -36,7 +36,7 @@
   font-size:var(--fs-lede);line-height:1.36;text-align:center;color:var(--ink)}
 
 .rz-section{display:flex;flex-direction:column;gap:var(--sp-item);padding-top:var(--sp-sec)}
-.rz-section-label{margin:0;font-size:var(--fs-sec);font-weight:400;letter-spacing:.3em;
+.rz-section-label{margin:0;font-size:var(--fs-sec);font-weight:400;letter-spacing:0.08em;
   text-transform:uppercase;color:var(--accent);text-align:center}
 .rz-entries{display:flex;flex-direction:column;gap:var(--sp-item);
   border-top:var(--rw) solid var(--rule);padding-top:var(--sp-item)}
