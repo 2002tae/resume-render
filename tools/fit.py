@@ -22,10 +22,12 @@ from ats_check import render_ts, to_pdf  # noqa
 FLOOR = 0.82
 STEPS = 4           # 이분탐색 반복 — 0.18 범위를 ~0.003 정밀도로
 
+EXTRA_OPTS = {}   # --opts '<json>' 로 주입 (예: {"sections":{"exclude":["summary"]}})
+
 def render_opts(ir, density, min_priority, theme=None):
     if theme:
         from render_theme import render as _r
-        return _r(ir, theme, density, min_priority)
+        return _r(ir, theme, density, min_priority, EXTRA_OPTS)
     js = f"""
     import {{ render }} from '{ROOT/"dist/index.js"}';
     const ir = JSON.parse(process.argv[1]);
@@ -92,9 +94,10 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("ir"); ap.add_argument("--theme"); ap.add_argument("--all", action="store_true")
     ap.add_argument("--pages", type=int, default=1); ap.add_argument("--out"); ap.add_argument("--outdir")
-    ap.add_argument("-q", action="store_true")
+    ap.add_argument("-q", action="store_true"); ap.add_argument("--opts", default="{}")
     a = ap.parse_args()
     ir = json.loads(pathlib.Path(a.ir).read_text())
+    global EXTRA_OPTS; EXTRA_OPTS = json.loads(a.opts)
     log = (lambda *x: None) if a.q else print
     themes = sorted(d.name for d in (ROOT/"themes").iterdir() if d.is_dir()) if a.all else [a.theme]
     outdir = pathlib.Path(a.outdir or "out/fit"); outdir.mkdir(parents=True, exist_ok=True)

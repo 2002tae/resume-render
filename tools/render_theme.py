@@ -8,9 +8,10 @@ if not (ROOT/"dist/index.js").exists():
     raise SystemExit("dist/index.js not found — run `npm install && npm run build` first (the tools render through the compiled library)")
 sys.path.insert(0,str(ROOT/"tools")); from ats_check import to_pdf
 
-def render(ir, theme, density=1.0, min_priority=None):
+def render(ir, theme, density=1.0, min_priority=None, extra=None):
     man=json.loads((ROOT/"themes"/theme/"manifest.json").read_text())
-    opts=dict(man.get("defaults",{}))
+    d=man.get("defaults",{}); e=extra or {}
+    opts={**d,**e,"sections":{**d.get("sections",{}),**e.get("sections",{})},"layout":{**d.get("layout",{}),**e.get("layout",{})},"vars":{**d.get("vars",{}),**e.get("vars",{})}}
     opts.setdefault("vars",{})["--density"]=f"{density:.3f}"
     if min_priority: opts.setdefault("filter",{})["minPriority"]=min_priority
     js=f"""import {{ render }} from '{ROOT/"dist/index.js"}';
