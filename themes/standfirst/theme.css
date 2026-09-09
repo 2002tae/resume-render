@@ -1,0 +1,54 @@
+/* standfirst — "3b Standfirst" 원본 복원. profile: safe
+   이름 아래 굵은 룰 → 이탤릭 세리프 리드(요약) → 연락처. 섹션 제목은 우측 끝 이탤릭 세리프,
+   그 아래 가는 룰. 불릿은 얇은 세로 바 마커. 상단 "DATA ENGINEERING" 캡션은 제외(요청). */
+.rz{
+  --paper:oklch(0.99 0.004 250); --ink:oklch(0.2 0.02 265); --mid:oklch(0.45 0.02 265);
+  --faint:oklch(0.6 0.02 265); --accent:oklch(0.5 0.14 22); --rule:oklch(0.85 0.012 265);
+  --density:1;
+  --fs:calc(10.6px * var(--density)); --lh:1.36;
+  --fs-name:calc(36px * var(--density)); --fs-sec:calc(12.4px * var(--density));
+  --fs-meta:calc(11px * var(--density)); --fs-entry:calc(11.6px * var(--density));
+  --fs-lede:calc(14px * var(--density));
+  --sp-sec:calc(7px * var(--density)); --sp-item:calc(4.5px * var(--density));
+  --sp-bul:calc(2.2px * var(--density)); --rw:1px;
+  padding:calc(44px * var(--density)) calc(48px * var(--density));
+  background:var(--paper); color:var(--ink);
+  font-family:'Libre Franklin','Archivo','Helvetica Neue',sans-serif; font-size:var(--fs); line-height:var(--lh);
+}
+.rz-basics{padding-bottom:6px}
+.rz-name{padding-bottom:6px;border-bottom:calc(var(--rw) * 2) solid var(--ink);letter-spacing:-.015em}
+.rz-name{margin:0;font-family:'Newsreader','Source Serif 4',Georgia,serif;font-size:var(--fs-name);font-weight:400;line-height:1}
+.rz-headline{display:none}
+/* 연락처는 리드 아래 — 원본 순서. 정규 HTML 상 basics 가 먼저이므로 시각적으로만 순서를 맞춘다:
+   basics 를 그리드로 두고 연락처를 아래 행에, 요약 섹션은 그 사이에 오도록 음수 마진 */
+.rz-basics .rz-summary--header{margin:8px 0 0;font-family:'Newsreader','Source Serif 4',Georgia,serif;font-style:italic;
+  font-size:var(--fs-lede);line-height:1.42;color:var(--ink)}
+.rz-contacts{margin:7px 0 0;font-size:var(--fs-meta);color:var(--mid)}
+.rz-contact{display:inline}
+.rz-contact:not(:last-child)::after{content:"  ·  ";color:var(--faint)}
+
+.rz-section[data-section="summary"]{border-top:none;padding-top:8px;margin-top:0}
+.rz-section[data-section="summary"] .rz-section-label{display:none}
+.rz-summary{margin:0;font-family:'Newsreader','Source Serif 4',Georgia,serif;font-style:italic;font-size:var(--fs-lede);
+  line-height:1.42;color:var(--ink)}
+
+/* 섹션 제목: 우측 끝 이탤릭, 아래 가는 룰 */
+.rz-section{display:flex;flex-direction:column;gap:var(--sp-item);padding-top:var(--sp-sec)}
+.rz-section-label{margin:0;font-family:'Newsreader','Source Serif 4',Georgia,serif;font-style:italic;font-size:var(--fs-sec);
+  font-weight:400;color:var(--accent);text-align:right;padding-bottom:3px;border-bottom:var(--rw) solid var(--rule)}
+.rz-entries{display:flex;flex-direction:column;gap:var(--sp-item)}
+
+.rz-entry-head{display:flex;flex-wrap:wrap;align-items:baseline;column-gap:8px}
+.rz-title{font-size:var(--fs-entry);font-weight:600}
+.rz-org{color:var(--mid)}
+.rz-org::before{content:"· ";color:var(--faint)}
+.rz-dates{margin-left:auto;font-family:'Newsreader','Source Serif 4',Georgia,serif;font-style:italic;font-size:var(--fs-meta);
+  color:var(--faint);white-space:nowrap}
+.rz-sub,.rz-coursework{margin:1px 0 0;color:var(--mid)}
+.rz-kicker{font-weight:600;color:var(--ink);margin-right:6px}
+.rz-awards{margin:0}
+.rz-bullets{display:flex;flex-direction:column;gap:var(--sp-bul);margin-top:3px}
+/* 원본 마커: 얇은 세로 바 */
+.rz-bullet{position:relative;padding-left:11px}
+.rz-bullet::before{content:"";position:absolute;left:0;top:.28em;width:1px;height:1em;background:var(--rule)}
+.rz-skills{column-gap:8px}

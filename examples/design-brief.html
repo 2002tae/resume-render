@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Résumé design brief — fixed markup, style with CSS only</title>
+
+<!-- ===================================================================
+     PAGE FRAME — do not restyle these rules.
+     min-height (not height) + overflow:visible + the dashed line at
+     1056px exist so overflow is VISIBLE. If content crosses the dashed
+     line, the design does not fit. Tighten the design; never clip.
+     =================================================================== -->
+<style>
+  html { background: #d8d5cf; }
+  body { margin: 0; padding: 40px 0; }
+  .page {
+    position: relative;
+    width: 816px;
+    min-height: 1056px;
+    overflow: visible;
+    margin: 0 auto;
+    background: #fff;
+    box-sizing: border-box;
+    box-shadow: 0 2px 4px rgba(0,0,0,.14), 0 18px 44px rgba(0,0,0,.10);
+  }
+  .page::after {
+    content: "page 1 ends";
+    position: absolute;
+    top: 1056px;
+    left: 0;
+    right: 0;
+    border-top: 1px dashed #c0392b;
+    font: 400 10px/1 ui-monospace, Menlo, monospace;
+    color: #c0392b;
+    letter-spacing: .08em;
+    padding-top: 4px;
+    text-align: right;
+    pointer-events: none;
+  }
+</style>
+
+<!-- ===================================================================
+     YOUR STYLESHEET GOES HERE.
+     Style .rz and its descendants only. Do not modify the markup below.
+     =================================================================== -->
+<style id="theme">
+/* ===================================================================
+   YOUR DESIGN GOES HERE.
+
+   PAGE MARGIN CONVENTION — important.
+   .page has NO padding. Your stylesheet must create the page margin
+   itself, on .rz:
+
+       .rz { padding: 54px 60px; }
+
+   The PDF renderer uses @page { margin: 0 } and relies on this same
+   padding, so what you see here is exactly what prints. If you instead
+   assume an outer margin exists, the printed result gets it twice.
+   =================================================================== */
+</style>
+</head>
+<body>
+
+<div class="page">
+<article class="rz">
+
+  <header class="rz-basics">
+    <h1 class="rz-name">Taemin Kang</h1>
+    <p class="rz-headline">Data Engineer</p>
+    <ul class="rz-contacts">
+      <li class="rz-contact" data-kind="email">taemin.kang@gmail.com</li>
+      <li class="rz-contact" data-kind="phone">+1 (814) 555-0100</li>
+      <li class="rz-contact" data-kind="linkedin">linkedin.com/in/taemin-kang</li>
+      <li class="rz-contact" data-kind="github">github.com/2002tae</li>
+      <li class="rz-contact" data-kind="website">artemiscareer.com</li>
+    </ul>
+  </header>
+
+  <section class="rz-section" data-section="summary">
+    <h2 class="rz-section-label">Summary</h2>
+    <div class="rz-entries">
+      <p class="rz-summary">Data engineer who builds and operates production data infrastructure end-to-end — a solo-built 75 GB, 120M-row bitemporal market-data system, and a live AI platform ingesting 180K+ records from nine heterogeneous external sources.</p>
+    </div>
+  </section>
+
+  <section class="rz-section" data-section="education">
+    <h2 class="rz-section-label">Education</h2>
+    <div class="rz-entries">
+      <div class="rz-entry">
+        <div class="rz-entry-head">
+          <span class="rz-title">Pennsylvania State University</span>
+          <span class="rz-org">State College, PA</span>
+          <span class="rz-dates">Expected May 2027</span>
+        </div>
+        <p class="rz-sub">B.S. Computational Data Science &amp; Statistics (double major) · Minor in Mathematics · Major GPA 3.54 / 4.0</p>
+        <p class="rz-coursework"><span class="rz-kicker">Coursework</span>Big Data (Spark, MapReduce) · Database Systems · Machine Learning · Applied Data Mining (graduate) · Linear Algebra</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="rz-section" data-section="experiences">
+    <h2 class="rz-section-label">Experience</h2>
+    <div class="rz-entries">
+
+      <div class="rz-entry">
+        <div class="rz-entry-head">
+          <span class="rz-title">Solo Developer &amp; Product Owner</span>
+          <span class="rz-org">Artemis — AI Career Platform</span>
+          <span class="rz-dates">Mar 2026 – Present</span>
+        </div>
+        <ul class="rz-bullets">
+          <li class="rz-bullet" data-priority="1">Engineered a Postgres-native async ingestion pipeline across nine external sources — Greenhouse, Ashby, Lever, Workday and LinkedIn among them — normalizing heterogeneous schemas into a shared index of 180K+ postings.</li>
+          <li class="rz-bullet" data-priority="1">Designed a multi-tier cache (normalized URL → ATS API → metered LLM) with SHA-256 content-hash deduplication and cross-source identity merge, so duplicates resolve on a $0 path instead of re-triggering paid extraction.</li>
+          <li class="rz-bullet" data-priority="2">Built the backend on FastAPI, SQLModel and PostgreSQL 17 with a 25-table row-level-security schema and contract-first Pydantic → OpenAPI → TypeScript codegen gated in CI, eliminating client/schema drift.</li>
+          <li class="rz-bullet" data-priority="3">Self-host a fine-tuned LLM (Qwen 3.6 9B, QLoRA → vLLM, NVFP4) with an embedding retrieval layer and per-call cost metering.</li>
+        </ul>
+      </div>
+
+      <div class="rz-entry">
+        <div class="rz-entry-head">
+          <span class="rz-title">Intelligence Analyst</span>
+          <span class="rz-org">Korea Defense Intelligence Command</span>
+          <span class="rz-dates">Dec 2023 – Jun 2025</span>
+        </div>
+        <ul class="rz-bullets">
+          <li class="rz-bullet" data-priority="2">Built a Python NLP pipeline that classified 150+ unstructured intelligence reports, cutting manual analysis time 60%.</li>
+          <li class="rz-bullet" data-priority="3">Developed an anomaly-detection system flagging high-priority events at 85% precision.</li>
+        </ul>
+      </div>
+
+    </div>
+  </section>
+
+  <section class="rz-section" data-section="projects">
+    <h2 class="rz-section-label">Projects</h2>
+    <div class="rz-entries">
+      <div class="rz-entry">
+        <div class="rz-entry-head">
+          <span class="rz-title">Project Eureka</span>
+          <span class="rz-org">Korean-market data infrastructure, solo</span>
+          <span class="rz-dates">Feb 2026 – Present</span>
+        </div>
+        <ul class="rz-bullets">
+          <li class="rz-bullet" data-priority="1">Architected and operate a 75 GB PostgreSQL + TimescaleDB system — 120M+ rows across 89 tables and 18 hypertables — ingesting 26 sources on 18 systemd timers with a dead-letter retry queue.</li>
+          <li class="rz-bullet" data-priority="1">Implemented bitemporal point-in-time versioning and an amendment-supersession resolver over 135K record versions, closing a correctness defect in which later amendments masked when data became available.</li>
+          <li class="rz-bullet" data-priority="2">Maintain a daily-reconciled slowly-changing entity dimension — ~2,800 active of 3,900+ historical entities, ~50 transitions per day across an eight-state model — rebuilt daily rather than snapshotted.</li>
+          <li class="rz-bullet" data-priority="2">Operate self-healing resumable backfills (342K rows, 2008–2023, unattended) plus standing audits holding 0 duplicate keys and 0 time-series gaps.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="rz-section" data-section="research">
+    <h2 class="rz-section-label">Research</h2>
+    <div class="rz-entries">
+
+      <div class="rz-entry">
+        <div class="rz-entry-head">
+          <span class="rz-title">Undergraduate Researcher</span>
+          <span class="rz-org">Penn State SURE Program, Department of Statistics</span>
+          <span class="rz-dates">May – Jul 2026</span>
+        </div>
+        <ul class="rz-bullets">
+          <li class="rz-bullet" data-priority="2">Deployed KR-FinBERT GPU inference over 860K+ text rows (BFloat16, torch.compile, OOM-adaptive batching) and implemented 121 registered features across three layers.</li>
+          <li class="rz-bullet" data-priority="2">Built a conditional predictive-distribution pipeline over 30 years of index data, implementing GARCH and particle-filter models from scratch and validating each by synthetic parameter recovery.</li>
+        </ul>
+      </div>
+
+      <div class="rz-entry">
+        <div class="rz-entry-head">
+          <span class="rz-title">Undergraduate Researcher</span>
+          <span class="rz-org">Penn State EECS Undergraduate Research Program</span>
+          <span class="rz-dates">Incoming Fall 2026</span>
+        </div>
+        <ul class="rz-bullets">
+          <li class="rz-bullet" data-priority="3">Funded research award: learning-based models for power-system stability assessment from PMU time-series measurements.</li>
+        </ul>
+      </div>
+
+    </div>
+  </section>
+
+  <section class="rz-section" data-section="skills">
+    <h2 class="rz-section-label">Skills</h2>
+    <div class="rz-entries">
+      <p class="rz-skill"><span class="rz-kicker">Languages</span><span class="rz-skill-items">Python · SQL · Scala · R</span></p>
+      <p class="rz-skill"><span class="rz-kicker">Data</span><span class="rz-skill-items">PostgreSQL · TimescaleDB · pgvector · schema design · bitemporal and slowly-changing dimensions · partitioning · query optimization</span></p>
+      <p class="rz-skill"><span class="rz-kicker">Pipelines</span><span class="rz-skill-items">ETL / ELT · async Python · Procrastinate · systemd timers · dead-letter queues · idempotent resumable backfills · Apache Spark</span></p>
+      <p class="rz-skill"><span class="rz-kicker">Reliability</span><span class="rz-skill-items">point-in-time correctness · reconciliation and coverage audits · staleness detection · lineage · observability and alerting</span></p>
+      <p class="rz-skill"><span class="rz-kicker">Platform</span><span class="rz-skill-items">FastAPI · SQLModel · Alembic · OpenAPI codegen · row-level security · OAuth (Gmail / Graph) · Pub/Sub · GitHub Actions · Linux · PyTorch</span></p>
+      <p class="rz-skill"><span class="rz-kicker">Spoken</span><span class="rz-skill-items">Korean (native) · English (fluent) · Mandarin Chinese (HSK 5)</span></p>
+    </div>
+  </section>
+
+  <section class="rz-section" data-section="awards">
+    <h2 class="rz-section-label">Awards</h2>
+    <div class="rz-entries">
+      <p class="rz-awards">Sung and Fumi Lee Scholarship, Penn State (Fall 2026) · Mu Sigma Rho, National Statistics Honor Society</p>
+    </div>
+  </section>
+
+</article>
+</div>
+
+</body>
+</html>

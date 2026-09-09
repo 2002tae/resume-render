@@ -1,0 +1,174 @@
+{
+  "version": "1.0",
+  "basics": {
+    "name": "Taemin Kang",
+    "headline": "Data Engineer",
+    "contacts": [
+      {
+        "kind": "email",
+        "value": "taemin.kang@gmail.com"
+      },
+      {
+        "kind": "phone",
+        "value": "+1 (814) 555-0100"
+      },
+      {
+        "kind": "linkedin",
+        "value": "linkedin.com/in/taemin-kang"
+      },
+      {
+        "kind": "github",
+        "value": "github.com/2002tae"
+      }
+    ]
+  },
+  "summary": {
+    "style": "paragraph",
+    "text": "Data engineer who builds and operates production data infrastructure end-to-end. Solo-built a 75 GB, 120M+ row market-data system with bitemporal point-in-time versioning."
+  },
+  "education": [
+    {
+      "school": "Pennsylvania State University",
+      "degree": "B.S. Computational Data Science & Statistics (Double Major)",
+      "location": "State College, PA",
+      "dates": {
+        "raw": "Expected May 2027"
+      },
+      "gpa": {
+        "value": "3.54",
+        "scale": "4.0",
+        "label": "Major GPA"
+      },
+      "coursework": [
+        "Computer Structures and Algorithms",
+        "Big Data (MapReduce, Spark)",
+        "Database Systems",
+        "Applied Data Mining (graduate)",
+        "Linear Algebra"
+      ]
+    }
+  ],
+  "experiences": [
+    {
+      "key": "artemis",
+      "title": "Solo Developer & Product Owner",
+      "org": "Artemis — AI Career Platform",
+      "dates": {
+        "raw": "Mar 2026 – Present"
+      },
+      "bullets": [
+        {
+          "text": "Engineered a Postgres-native async ingestion pipeline across major ATS platforms, normalizing heterogeneous schemas into a shared index of 180K+ postings.",
+          "priority": 1
+        },
+        {
+          "text": "Designed a multi-tier cache with SHA-256 content-hash deduplication and cross-source identity merge, so duplicate records resolve on a $0 path.",
+          "priority": 2
+        },
+        {
+          "text": "Built the backend on FastAPI and PostgreSQL 17 with a 25-table row-level-security schema and contract-first codegen gated in CI.",
+          "priority": 2
+        }
+      ]
+    },
+    {
+      "key": "kdic",
+      "title": "Intelligence Analyst",
+      "org": "Korea Defense Intelligence Command",
+      "dates": {
+        "raw": "Dec 2023 – Jun 2025"
+      },
+      "bullets": [
+        {
+          "text": "Built a Python NLP pipeline that classified 150+ unstructured intelligence reports, cutting manual analysis time 60%.",
+          "priority": 1
+        },
+        {
+          "text": "Developed an anomaly-detection system flagging high-priority events at 85% precision.",
+          "priority": 3
+        }
+      ]
+    }
+  ],
+  "projects": [
+    {
+      "key": "eureka",
+      "name": "Project Eureka",
+      "subtitle": "Korean-Market Data Infrastructure",
+      "role": "solo",
+      "dates": {
+        "raw": "Feb 2026 – Present"
+      },
+      "bullets": [
+        {
+          "text": "Architected and operate a 75 GB PostgreSQL and TimescaleDB system across 89 tables and 18 hypertables, ingesting from 26 sources on 18 systemd timers.",
+          "priority": 1
+        },
+        {
+          "text": "Implemented bitemporal point-in-time versioning and an amendment-supersession resolver over 135K record versions.",
+          "priority": 1
+        },
+        {
+          "text": "Maintain a daily-reconciled slowly-changing entity dimension of roughly 2,800 active entities out of 3,900 historical.",
+          "priority": 2
+        }
+      ]
+    }
+  ],
+  "research": [
+    {
+      "key": "sure",
+      "title": "Bayesian Volatility & Tail-Risk Modeling",
+      "role": "Undergraduate Researcher",
+      "institution": "Penn State SURE Program",
+      "dates": {
+        "raw": "May – Jul 2026"
+      },
+      "status": "completed",
+      "bullets": [
+        {
+          "text": "Built a conditional predictive-distribution pipeline over 30 years of index data, implementing GARCH and particle-filter models from scratch.",
+          "priority": 1
+        }
+      ]
+    }
+  ],
+  "skills": [
+    {
+      "label": "Languages",
+      "items": [
+        "Python",
+        "SQL",
+        "Scala",
+        "R"
+      ]
+    },
+    {
+      "label": "Databases",
+      "items": [
+        "PostgreSQL",
+        "TimescaleDB",
+        "pgvector",
+        "schema design"
+      ]
+    },
+    {
+      "label": "Pipelines",
+      "items": [
+        "ETL / ELT",
+        "async Python",
+        "systemd timers",
+        "dead-letter queues"
+      ]
+    }
+  ],
+  "awards": [
+    {
+      "title": "Sung and Fumi Lee Scholarship",
+      "issuer": "Penn State"
+    },
+    {
+      "title": "Mu Sigma Rho, National Statistics Honor Society"
+    }
+  ]
+}

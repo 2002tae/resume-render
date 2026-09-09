@@ -1,0 +1,68 @@
+/* academic — from "2e Academic". profile: safe. CV 관례 · 중앙 정렬 */
+.rz{
+  --paper:#fffffd; --ink:#171614; --mid:#4d4a44; --faint:#8b877f;
+  --accent:#171614; --rule:rgba(23,22,20,.5); --density:1;
+  --fs:calc(10.9px * var(--density)); --lh:1.3;
+  --fs-name:calc(27px * var(--density)); --fs-sec:calc(10.6px * var(--density)); --fs-meta:calc(10.4px * var(--density)); --fs-entry:calc(12px * var(--density)); --tr-sec:.2em;
+  --sp-sec:calc(7px * var(--density)); --sp-item:calc(5px * var(--density));
+  --sp-bul:calc(2px * var(--density)); --rw:1px;
+  padding:calc(46px * var(--density)) calc(46px * var(--density)) calc(54px * var(--density));
+  background:var(--paper); color:var(--ink);
+  font-family:'EB Garamond',Georgia,serif; font-size:var(--fs); line-height:var(--lh);
+}
+.rz-basics{text-align:center;padding-bottom:var(--sp-sec)}
+.rz-name{margin:0;font-size:var(--fs-name);font-weight:400;letter-spacing:.06em;
+  text-transform:uppercase;line-height:1.1}
+.rz-headline{margin:4px 0 0;font-size:var(--fs-meta);color:var(--mid);font-style:italic}
+/* 연락처 2줄: 이메일·전화 / 링크들. 링크 첫 항목(linkedin) 앞에서 줄바꿈 — CSS 만으로 하려면
+   특정 kind 를 기준으로 삼아야 한다(linkedin 없는 이력서는 github 이 기준이 되게 둘 다 지정하되
+   linkedin 이 있으면 github 앞 줄바꿈은 무시되도록 아래 순서로). 구분점은 키우고 간격을 넓힌다. */
+.rz-contacts{margin:7px 0 0;font-size:var(--fs-meta);color:var(--mid);line-height:1.7}
+.rz-contact{display:inline}
+.rz-contact:not(:last-child)::after{content:"\00a0\00a0\00a0\2022\00a0\00a0\00a0";color:var(--faint);font-size:.85em}
+.rz-contact[data-kind="phone"]::after{content:""}
+.rz-contact[data-kind="linkedin"]::before{content:"\A";white-space:pre}
+.rz-contact[data-kind="phone"]+.rz-contact[data-kind="github"]::before{content:"\A";white-space:pre}
+.rz-section{display:flex;flex-direction:column;gap:var(--sp-item);padding-top:var(--sp-sec)}
+.rz-section-label{margin:0;font-size:var(--fs-sec);font-weight:400;letter-spacing:var(--tr-sec);
+  text-transform:uppercase;text-align:center;padding-bottom:3px;
+  border-bottom:var(--rw) solid var(--rule)}
+.rz-entries{display:flex;flex-direction:column;gap:var(--sp-item)}
+.rz-entry-head{display:grid;grid-template-columns:minmax(0,1fr) auto;column-gap:7px;align-items:baseline}
+/* 원본 CV 는 기관명이 굵은 표제, 직함이 그 아래 이탤릭이다. 정규 HTML 은 title→org 순서이고
+   order 로 뒤집으면 읽기 순서가 DOM 과 어긋난다(R6). 순서는 지키고 시각 강조만 CV 관례대로.
+   진짜 뒤집기는 CSS 가 아니라 IR/렌더러 옵션이 할 일이다 — 계약 미결 항목 T-6. */
+/* orgFirst: org 가 굵은 표제(날짜와 같은 줄), title 은 다음 줄 이탤릭 — 그리드 행 명시(order 불사용) */
+.rz-title{grid-column:1;grid-row:1;font-size:var(--fs-entry);font-weight:600;color:var(--ink)}
+.rz-org{grid-column:1;grid-row:2;font-style:italic;color:var(--mid)}
+.rz-dates{grid-column:2;grid-row:1}
+/* experiences·research 는 DOM 이 org→title 이므로 역할을 바꾼다 */
+.rz-section[data-section="experiences"] .rz-org,
+.rz-section[data-section="research"] .rz-org{grid-row:1;font-size:var(--fs-entry);font-weight:600;font-style:normal;color:var(--ink)}
+.rz-section[data-section="experiences"] .rz-title,
+.rz-section[data-section="research"] .rz-title{grid-column:1 / span 2;grid-row:2;font-style:italic;font-weight:400;color:var(--mid);font-size:var(--fs)}
+.rz-dates{font-size:var(--fs-meta);color:var(--faint);white-space:nowrap}
+.rz-sub,.rz-coursework{margin:1px 0 0;color:var(--mid)}
+.rz-kicker{font-style:italic;color:var(--mid);margin-right:5px}
+.rz-summary{margin:0}
+.rz-awards{margin:0;color:var(--mid)}
+.rz-bullets{display:flex;flex-direction:column;gap:var(--sp-bul);margin-top:2px}
+/* 원본은 마커 없이 행잉 인덴트 + em dash (전사) */
+/* 원본은 em-dash 텍스트 마커지만 글리프는 추출에 섞인다 — 같은 시각의 짧은 선(박스)으로 */
+.rz-bullet{position:relative;padding-left:14px}
+.rz-bullet::before{content:"";position:absolute;left:0;top:.62em;width:8px;height:1px;
+  background:var(--faint)}
+/* 원본은 라벨이 한 단어라 인라인으로 정렬돼 보였다. 실제 IR 라벨은 길고 길이가 제각각이라
+   인라인이면 값의 시작점이 들쭉날쭉하고 줄바꿈 시 리듬이 깨진다(실측) — 고정 트랙으로 정렬.
+   --lab-w 는 테마 폰트 기준 가장 긴 라벨이 한 줄에 들어가는 폭. */
+.rz-skill .rz-kicker{grid-column:1;grid-row:1;margin:0}
+
+/* 스킬 행은 직장 항목이 아니다 — 원본은 불릿 간격(--sp-bul)을 쓴다. --sp-item 을 상속하면
+   행 사이가 3~4배 벌어져 부자연스럽다(실측). coursework/awards 도 같은 이유로 촘촘하게. */
+/* WeasyPrint 버그: flex 컨테이너의 자식이 grid 면 행 높이가 2~3배로 계산된다(실측).
+   skills 행은 grid 이므로 컨테이너를 block 으로 두고 간격은 margin 으로 준다. */
+.rz-section[data-section="skills"] .rz-skill + .rz-skill,
+.rz-section[data-section="languages"] .rz-skill + .rz-skill{margin-top:var(--sp-bul)}
+
+/* honors 는 마지막 섹션 — 페이지 끝에 맞닿지 않게 위 여백을 줄이고 본문 하단 패딩으로 숨 쉴 공간 */
+.rz-section[data-section="awards"]{padding-top:calc(var(--sp-sec) * .8)}

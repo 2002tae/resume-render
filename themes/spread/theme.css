@@ -1,0 +1,73 @@
+/* spread — "5c Spread" 원본 재현. profile: expressive
+   ★ 랜드스케이프 용지를 펼친 책처럼: 가운데 거터 괘선 기준 좌/우 페이지 */
+@page{size:11in 8.5in;margin:0}
+.rz{
+  --paper:oklch(0.982 0.007 90); --ink:oklch(0.2 0.014 55); --mid:oklch(0.44 0.014 55);
+  --faint:oklch(0.58 0.014 55); --accent:oklch(0.45 0.13 25); --rule:oklch(0.85 0.012 55);
+  --density:1; --gutter:56px;
+  --fs:calc(10.3px * var(--density)); --lh:1.34;
+  --fs-name:calc(46px * var(--density)); --fs-sec:calc(12px * var(--density)); --fs-meta:calc(9.2px * var(--density)); --fs-entry:calc(11.3px * var(--density)); --fs-lede:calc(13px * var(--density));
+  --sp-sec:calc(8.0px * var(--density)); --sp-item:calc(5px * var(--density));
+  --sp-bul:calc(2.5px * var(--density)); --rw:1px;
+  padding:calc(52px * var(--density)) calc(56px * var(--density)); background:var(--paper); color:var(--ink);
+  font-family:'Source Serif 4',Georgia,serif; font-size:var(--fs); line-height:var(--lh);
+  /* 그리드는 좌우가 행을 공유해 오른쪽에 큰 빈칸이 생긴다(실측).
+     멀티컬럼은 내용이 자연스럽게 이어져 흘러 '펼친 책'에 더 가깝다. */
+  columns:2; column-gap:var(--gutter);
+  column-rule:var(--rw) solid var(--rule); column-fill:auto;
+}
+/* 좌: 헤더·요약·경력·학력 */
+.rz-basics{display:grid;grid-template-columns:minmax(0,1fr) auto;column-gap:16px;align-items:start;
+  padding-bottom:var(--sp-sec);break-after:avoid}
+.rz-name{margin:0;font-family:'Newsreader','Source Serif 4',Georgia,serif;font-size:var(--fs-name);
+  font-weight:400;line-height:1;letter-spacing:-.015em}
+.rz-headline{margin:5px 0 0;font-size:var(--fs-meta);color:var(--accent);text-transform:uppercase}
+/* 연락처를 이름 우측에 세로로 (피드백: 공간 절약) */
+.rz-contacts{grid-column:2;grid-row:1;margin:4px 0 0;font-size:var(--fs-meta);color:var(--mid);
+  line-height:1.55;text-align:right}
+.rz-contact{display:block}
+.rz-name{grid-column:1;grid-row:1}
+/* 원본: 이름 아래 라벨 없는 이탤릭 리드, 그 아래 연락처 세로 (연락처는 이름 우측으로 옮김) */
+.rz-basics .rz-summary--header{grid-column:1 / span 2;margin:10px 0 0;font-family:'Newsreader','Source Serif 4',Georgia,serif;
+  font-style:italic;font-size:var(--fs-lede);line-height:1.45;color:var(--ink)}
+/* 라벨 고아 방지: flex 섹션의 break-inside 는 다단에서 무시된다(실측) — block 으로 */
+/* 다단에서 섹션 통째 이동은 좌측 컬럼을 비워 양쪽이 짧게 균형된다(실측) — 흐르게 두고 라벨만 보호 */
+.rz-section{display:block;padding-top:var(--sp-sec)}
+.rz-section-label{margin-bottom:var(--sp-item);break-after:avoid;padding-bottom:3px;border-bottom:var(--rw) solid var(--rule)}
+/* flex 컨테이너는 컬럼 사이에서 쪼개지지 않아 섹션이 통째로 넘어간다(실측) — block + 마진 */
+.rz-entries{display:block}
+.rz-entry{margin-bottom:var(--sp-item)}
+.rz-entry:last-child{margin-bottom:0}
+
+.rz-section-label{break-after:avoid;margin:0;font-family:'Newsreader','Source Serif 4',Georgia,serif;font-style:italic;
+  font-size:var(--fs-sec);font-weight:400;color:var(--accent)}
+/* flex 컨테이너는 컬럼 사이에서 쪼개지지 않아 섹션이 통째로 넘어간다(실측) — block + 마진 */
+.rz-entries{display:block}
+.rz-entry{margin-bottom:var(--sp-item)}
+.rz-entry:last-child{margin-bottom:0}
+.rz-entry-head{display:flex;flex-wrap:wrap;align-items:baseline;column-gap:8px}
+.rz-title{font-size:var(--fs-entry);font-weight:700}
+.rz-org{color:var(--mid)}
+.rz-dates{margin-left:auto;font-size:var(--fs-meta);color:var(--faint);white-space:nowrap}
+.rz-sub,.rz-coursework{margin:1px 0 0;color:var(--mid)}
+.rz-kicker{font-style:italic;color:var(--accent);margin-right:6px}
+.rz-summary{margin:0;font-family:'Newsreader','Source Serif 4',Georgia,serif;font-style:italic;
+  font-size:var(--fs-lede);line-height:1.45}
+.rz-awards{margin:0;color:var(--mid)}
+.rz-bullets{display:flex;flex-direction:column;gap:var(--sp-bul);margin-top:2px}
+.rz-bullet{padding-left:0}
+/* 원본은 라벨이 한 단어라 인라인으로 정렬돼 보였다. 실제 IR 라벨은 길고 길이가 제각각이라
+   인라인이면 값의 시작점이 들쭉날쭉하고 줄바꿈 시 리듬이 깨진다(실측) — 고정 트랙으로 정렬.
+   --lab-w 는 테마 폰트 기준 가장 긴 라벨이 한 줄에 들어가는 폭. */
+.rz-skill .rz-kicker{grid-column:1;grid-row:1;margin:0}
+
+/* 스킬 행은 직장 항목이 아니다 — 원본은 불릿 간격(--sp-bul)을 쓴다. --sp-item 을 상속하면
+   행 사이가 3~4배 벌어져 부자연스럽다(실측). coursework/awards 도 같은 이유로 촘촘하게. */
+/* WeasyPrint 버그: flex 컨테이너의 자식이 grid 면 행 높이가 2~3배로 계산된다(실측).
+   skills 행은 grid 이므로 컨테이너를 block 으로 두고 간격은 margin 으로 준다. */
+.rz-section[data-section="skills"] .rz-skill + .rz-skill,
+.rz-section[data-section="languages"] .rz-skill + .rz-skill{margin-top:var(--sp-bul)}
+
+/* 다단 균형: flex 불릿 묶음은 통째로만 넘어가 균형 입도가 거칠다(실측 L971/R788) — block 으로 불릿 단위 분할 */
+.rz-bullets{display:block}
+.rz-bullet{margin-bottom:var(--sp-bul)}

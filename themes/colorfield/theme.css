@@ -1,0 +1,56 @@
+/* colorfield — "4e Colorfield" 원본 복원. profile: safe
+   단 하나의 잉크 필드: 이름(반전 Bodoni) + 이탤릭 요약 + 연락처가 짙은 블록 안. 본문은 세리프.
+   상단 "DATA ENGINEERING" 캡션은 제외(요청). */
+.rz{
+  --paper:oklch(0.968 0.016 92); --ink:oklch(0.22 0.03 30); --mid:oklch(0.44 0.025 30);
+  --faint:oklch(0.58 0.02 30); --accent:oklch(0.47 0.15 25); --rule:oklch(0.84 0.02 60);
+  --field:oklch(0.30 0.09 25); --on-field:oklch(0.95 0.02 60); --on-field-dim:oklch(0.86 0.05 40);
+  --density:1;
+  --fs:calc(10.4px * var(--density)); --lh:1.38;
+  --fs-name:calc(50px * var(--density)); --fs-sec:calc(10px * var(--density));
+  --fs-meta:calc(11.2px * var(--density)); --fs-entry:calc(11.8px * var(--density));
+  --fs-lede:calc(11.8px * var(--density));
+  --sp-sec:calc(8px * var(--density)); --sp-item:calc(4.5px * var(--density));
+  --sp-bul:calc(2.2px * var(--density)); --rw:1px;
+  padding:0 0 calc(40px * var(--density)); background:var(--paper); color:var(--ink);
+  font-family:'EB Garamond',Georgia,serif; font-size:var(--fs); line-height:var(--lh);
+}
+/* 잉크 필드: basics + summary 를 같은 배경으로 이어 붙인다 */
+.rz-basics{background:var(--field);color:var(--on-field);
+  padding:calc(44px * var(--density)) calc(48px * var(--density)) 26px}
+.rz-name{margin:0;font-family:'Bodoni Moda',Didot,serif;font-size:var(--fs-name);font-weight:400;
+  line-height:1.12;color:var(--on-field)}
+.rz-headline{display:none}
+/* 이름 → 요약 → 연락처 → 필드 끝. 요약~연락처 간격 = 연락처~필드끝 간격(22px) */
+.rz-basics .rz-summary--header{margin:26px 0 0;max-width:66ch;font-family:'Newsreader','Source Serif 4',Georgia,serif;font-style:italic;
+  font-size:var(--fs-lede);line-height:1.4;color:var(--on-field)}
+.rz-contacts{margin:26px 0 0;font-size:var(--fs-meta);color:var(--on-field-dim)}
+.rz-contact{display:inline}
+.rz-contact:not(:last-child)::after{content:"\00a0\00a0\00a0\2022\00a0\00a0\00a0";color:var(--on-field-dim);font-size:.8em}
+.rz-section[data-section="summary"]{background:var(--field);color:var(--on-field);
+  padding:6px calc(48px * var(--density)) calc(34px * var(--density));margin:0}
+.rz-section[data-section="summary"] .rz-section-label{display:none}
+.rz-summary{margin:0;max-width:64ch;font-family:'Newsreader','Source Serif 4',Georgia,serif;font-style:italic;
+  font-size:var(--fs-lede);line-height:1.4;color:var(--on-field)}
+
+/* 본문 */
+.rz-section{display:flex;flex-direction:column;gap:var(--sp-item);
+  padding:var(--sp-sec) calc(48px * var(--density)) 0}
+.rz-section-label{margin:0;font-family:'EB Garamond',Georgia,serif;font-size:var(--fs-sec);
+  font-weight:500;letter-spacing:.24em;text-transform:uppercase;color:var(--accent)}
+.rz-entries{display:flex;flex-direction:column;gap:var(--sp-item)}
+.rz-entry-head{display:flex;flex-wrap:wrap;align-items:baseline;column-gap:7px}
+.rz-title{font-family:'Bodoni Moda',Didot,serif;font-size:var(--fs-entry);font-weight:500}
+.rz-org{font-family:'Newsreader','Source Serif 4',Georgia,serif;font-style:italic;color:var(--mid)}
+.rz-dates{margin-left:auto;font-family:'Newsreader','Source Serif 4',Georgia,serif;font-style:italic;font-size:var(--fs-meta);
+  color:var(--faint);white-space:nowrap}
+.rz-sub,.rz-coursework{margin:1px 0 0;color:var(--mid)}
+/* 원본 kicker 는 자간 .14em 소형 대문자 — 자간은 추출을 깨므로(실측) 소형 대문자만 */
+.rz-kicker{font-size:.92em;font-variant:all-small-caps;text-transform:uppercase;color:var(--accent);margin-right:6px}
+.rz-awards{margin:0}
+.rz-bullets{display:flex;flex-direction:column;gap:var(--sp-bul);margin-top:2px}
+/* 원본: em-dash 행잉 마커 — 글리프는 추출에 섞이므로 같은 시각의 짧은 선 */
+/* em-dash 는 본문 좌측 정렬선에서 시작하지 않고 살짝 들어간다(원본) */
+.rz-bullet{position:relative;padding-left:16px}
+.rz-bullet::before{content:"";position:absolute;left:3px;top:.66em;width:7px;height:1px;background:var(--faint)}
+.rz-skills{column-gap:10px}

@@ -1,0 +1,6 @@
+# Verification tooling only — the library itself (dist/) has zero runtime dependencies.
+weasyprint>=60      # CSS Grid / multicol / @page support used by the themes
+Pillow>=10
+fonttools>=4.40     # instancing condensed Archivo, glyph coverage checks
+tinycss2>=1.2       # theme linter
+# System: poppler-utils (pdftotext, pdfinfo, pdftoppm, pdffonts) and Node >= 18 for the renderer.

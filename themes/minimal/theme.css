@@ -1,0 +1,49 @@
+/* minimal — from "1d High-contrast minimal". profile: safe */
+.rz{
+  --paper:#fff; --ink:#000; --mid:#4a4a4a; --faint:#6e6e6e; --accent:#000;
+  --density:1;
+  --fs:calc(11.5px * var(--density)); --lh:1.34;
+  --fs-name:calc(40px * var(--density)); --fs-sec:calc(11px * var(--density)); --fs-meta:calc(10.2px * var(--density)); --fs-entry:calc(12.4px * var(--density));
+  --tr-sec:.24em;
+  --sp-sec:calc(8.0px * var(--density)); --sp-item:calc(5.0px * var(--density));
+  --sp-bul:calc(2.5px * var(--density));
+  padding:calc(48px * var(--density)); background:var(--paper); color:var(--ink);
+  font-family:'Libre Franklin','Archivo','Helvetica Neue',sans-serif;
+  font-size:var(--fs); line-height:var(--lh);
+}
+.rz-basics{padding-bottom:calc(var(--sp-sec) * .8)}
+.rz-name{margin:0;font-size:var(--fs-name);font-weight:800;line-height:.94;letter-spacing:-.042em}
+.rz-headline{margin:6px 0 0;font-size:var(--fs-meta);color:var(--faint);
+  text-transform:uppercase;font-weight:600}
+.rz-contacts{margin:10px 0 0;font-size:var(--fs-meta);color:var(--mid);
+  display:flex;flex-wrap:wrap;column-gap:14px;row-gap:2px}
+
+.rz-section{display:flex;flex-direction:column;gap:var(--sp-item);
+  padding-top:calc(var(--sp-sec) * 1.6)}
+.rz-section-label{margin:0;font-size:var(--fs-sec);font-weight:700;letter-spacing:var(--tr-sec);
+  text-transform:uppercase;color:var(--mid)}
+.rz-entries{display:flex;flex-direction:column;gap:var(--sp-item)}
+
+.rz-entry-head{display:flex;flex-wrap:wrap;align-items:baseline;column-gap:8px}
+.rz-title{font-size:var(--fs-entry);font-weight:700}
+.rz-org{color:var(--mid)}
+.rz-dates{margin-left:auto;font-size:var(--fs-meta);color:var(--faint);white-space:nowrap}
+.rz-sub,.rz-coursework{margin:1px 0 0;color:var(--mid)}
+.rz-kicker{font-weight:700;color:var(--ink);margin-right:6px}
+.rz-summary{margin:0;font-size:calc(var(--fs) * 1.05)}
+.rz-awards{margin:0;color:var(--mid)}
+
+.rz-bullets{display:flex;flex-direction:column;gap:var(--sp-bul);margin-top:3px}
+/* 원본은 '괘선도 마커도 없이 굵기와 여백만으로' — 불릿 마커를 두지 않는다 */
+.rz-bullet{padding-left:0}
+/* 원본은 라벨이 한 단어라 인라인으로 정렬돼 보였다. 실제 IR 라벨은 길고 길이가 제각각이라
+   인라인이면 값의 시작점이 들쭉날쭉하고 줄바꿈 시 리듬이 깨진다(실측) — 고정 트랙으로 정렬.
+   --lab-w 는 테마 폰트 기준 가장 긴 라벨이 한 줄에 들어가는 폭. */
+.rz-skill .rz-kicker{grid-column:1;grid-row:1;margin:0}
+
+/* 스킬 행은 직장 항목이 아니다 — 원본은 불릿 간격(--sp-bul)을 쓴다. --sp-item 을 상속하면
+   행 사이가 3~4배 벌어져 부자연스럽다(실측). coursework/awards 도 같은 이유로 촘촘하게. */
+/* WeasyPrint 버그: flex 컨테이너의 자식이 grid 면 행 높이가 2~3배로 계산된다(실측).
+   skills 행은 grid 이므로 컨테이너를 block 으로 두고 간격은 margin 으로 준다. */
+.rz-section[data-section="skills"] .rz-skill + .rz-skill,
+.rz-section[data-section="languages"] .rz-skill + .rz-skill{margin-top:var(--sp-bul)}

@@ -1,0 +1,58 @@
+{
+  "id": "plain",
+  "name": "Plain",
+  "blurb": "Structural, no display type \u2014 for unattended generation (fitz.Story) and as a safe fallback",
+  "version": "0.1.0",
+  "engine": "plain",
+  "profile": "safe",
+  "origin": "builtin",
+  "page": {
+    "size": "letter",
+    "orientation": "portrait"
+  },
+  "supports": {
+    "sections": [
+      "basics",
+      "summary",
+      "education",
+      "experiences",
+      "projects",
+      "research",
+      "skills",
+      "awards"
+    ],
+    "options": [
+      "sections.order",
+      "sections.include",
+      "sections.exclude",
+      "filter"
+    ]
+  },
+  "fonts": [],
+  "baseBodyPx": 10.5,
+  "limits": {
+    "summaryChars": 400
+  },
+  "fitz": {
+    "verified": false,
+    "note": "PyMuPDF \ubbf8\uc124\uce58 \ud658\uacbd\uc5d0\uc11c \uc791\uc131 \u2014 Artemis \uc5d0\uc11c \uccab fitz.Story \ub80c\ub354 \uc2dc \uac80\uc99d\ud560 \uac83. --density \ub294 fitz \uac00 \ucee4\uc2a4\ud140 \ud504\ub85c\ud37c\ud2f0\ub97c \ubaa8\ub974\ubbc0\ub85c \uc774 \ud14c\ub9c8\uc5d0\uc120 \uace0\uc815\uac12\uc774\uba70, fit \uc740 filter.minPriority \ub9cc \uc4f4\ub2e4."
+  },
+  "ats": {
+    "verified": true,
+    "textComplete": true,
+    "orderPreserved": "all",
+    "interleaveWarnings": 0,
+    "fixtures": [
+      "dense",
+      "minimal",
+      "ragged",
+      "typical"
+    ],
+    "extractors": [
+      "pdftotext -layout",
+      "pdftotext"
+    ],
+    "checkedAt": "2026-09-08",
+    "note": "Text-layer integrity, not a vendor guarantee. See docs/template-contract.md \u00a75."
+  }
+}

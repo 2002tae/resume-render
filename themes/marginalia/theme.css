@@ -1,0 +1,54 @@
+/* marginalia — "4c Marginalia" 원본 복원. profile: safe
+   좌측 마진 레일: "Curriculum vitae" 커커, 섹션 라벨(이탤릭), 날짜. 본문은 책 페이지 폭. 섹션 사이 가는 룰. */
+.rz{
+  --paper:oklch(0.978 0.009 88); --ink:oklch(0.21 0.016 55); --mid:oklch(0.44 0.016 55);
+  --faint:oklch(0.58 0.016 55); --accent:oklch(0.46 0.12 30); --rule:oklch(0.85 0.012 55);
+  --density:1; --marg:118px; --gutter:20px;
+  --fs:calc(10.2px * var(--density)); --lh:1.36;
+  --fs-name:calc(30px * var(--density)); --fs-sec:calc(10.4px * var(--density));
+  --fs-meta:calc(9px * var(--density)); --fs-entry:calc(11.4px * var(--density));
+  --fs-lede:calc(12.2px * var(--density));
+  --sp-sec:calc(8px * var(--density)); --sp-item:calc(5px * var(--density));
+  --sp-bul:calc(2px * var(--density)); --rw:1px;
+  padding:calc(44px * var(--density)) calc(44px * var(--density));
+  background:var(--paper); color:var(--ink);
+  font-family:'Source Serif 4',Georgia,serif; font-size:var(--fs); line-height:var(--lh);
+}
+/* 헤더: 마진에 "Curriculum vitae", 본문에 이름·연락처 */
+.rz-basics{display:grid;grid-template-columns:var(--marg) minmax(0,1fr);column-gap:var(--gutter);
+  padding-bottom:var(--sp-sec)}
+.rz-name{grid-column:2;grid-row:1;margin:0;font-family:'Newsreader','Source Serif 4',Georgia,serif;font-size:var(--fs-name);
+  font-weight:400;line-height:1;letter-spacing:-.012em}
+.rz-headline{display:none}
+.rz-basics .rz-summary--header{grid-column:2;margin:8px 0 0;font-size:var(--fs-lede);line-height:1.4}
+.rz-contacts{grid-column:2;margin:6px 0 0;font-size:var(--fs-meta);color:var(--mid)}
+.rz-contact{display:inline}
+.rz-contact:not(:last-child)::after{content:"  ·  ";color:var(--faint)}
+/* 요약: 본문 열, 이름 바로 아래 (연락처보다 위에 오도록 순서는 IR 이 담당) */
+.rz-section[data-section="summary"]{border-top:none;margin-top:0;padding-top:calc(var(--sp-sec) * .6)}
+.rz-section[data-section="summary"] .rz-section-label{display:none}
+.rz-summary{margin:0;font-size:var(--fs-lede);line-height:1.4}
+
+/* 섹션: 마진 라벨 / 본문. 라벨과 날짜가 같은 마진 열이므로 엔트리를 라벨 한 줄만큼 내린다 */
+.rz-section{display:grid;grid-template-columns:var(--marg) minmax(0,1fr);column-gap:var(--gutter);
+  padding-top:var(--sp-sec);margin-top:var(--sp-sec);border-top:var(--rw) solid var(--rule)}
+.rz-section-label{grid-column:1;grid-row:1;margin:0;font-family:'Newsreader','Source Serif 4',Georgia,serif;
+  font-style:italic;font-size:var(--fs-sec);font-weight:400;color:var(--accent)}
+.rz-entries{grid-column:2;grid-row:1;display:flex;flex-direction:column;gap:var(--sp-item);
+  padding-top:calc(var(--fs-sec) * 1.55)}
+.rz-section[data-section="summary"] .rz-entries,
+.rz-section[data-section="skills"] .rz-entries,
+.rz-section[data-section="awards"] .rz-entries{padding-top:0}
+/* 날짜를 마진 레일로: entry-head 를 음수 마진으로 당겨 2열 그리드 (display:contents 미지원) */
+.rz-entry-head{display:grid;grid-template-columns:calc(var(--marg) - var(--gutter)) minmax(0,1fr);
+  column-gap:var(--gutter);margin-left:calc(var(--marg) * -1);align-items:start}
+.rz-title{grid-column:2;grid-row:1;font-size:var(--fs-entry);font-weight:700}
+.rz-org{grid-column:2;grid-row:2;font-style:italic;color:var(--mid);font-size:var(--fs)}
+.rz-dates{grid-column:1;grid-row:1;font-size:var(--fs-meta);color:var(--faint);white-space:nowrap;
+  padding-top:2px;text-align:left}
+.rz-sub,.rz-coursework{margin:1px 0 0;color:var(--mid)}
+.rz-kicker{font-style:italic;color:var(--accent);margin-right:6px}
+.rz-awards{margin:0}
+.rz-bullets{display:flex;flex-direction:column;gap:var(--sp-bul);margin-top:2px}
+.rz-bullet{padding-left:0}
+.rz-skills{column-gap:8px;row-gap:calc(var(--sp-bul) * 1.5)}

@@ -1,0 +1,181 @@
+/**
+ * Browser adapter — what the Artemis web app and extension import.
+ *
+ *   buildDocument(ir, theme, opts)  → full HTML string (shared css + theme css + render())
+ *   mount(container, doc)            → renders into an iframe for preview
+ *   plan(ir, theme, policy, measure) → page count / density / trim options, by measuring the DOM
+ *   printCurrent(iframe)             → browser print dialog → the user saves as PDF
+ *
+ * Pure DOM; no dependencies. The measurer is injected so plan() is testable in Node with a stub.
+ * Mirrors tools/fit.py — same search, same floor, same trim order — so server and browser agree.
+ */
+import { render } from "./render.js";
+import type { ResumeIR, RenderOptions, FitPolicy, Bullet } from "./ir.js";
+
+export type ThemeAssets = { sharedCss: string; themeCss: string; manifest: ThemeManifest };
+export type ThemeManifest = {
+  id: string; profile: "safe" | "expressive"; engine: "css" | "plain";
+  defaults?: RenderOptions; baseBodyPx?: number;
+  page?: { size?: "letter" | "a4"; orientation?: "portrait" | "landscape" };
+  pages?: { supports: number[] };
+  capacity?: { bulletsAt1Page?: number };
+  limits?: { nameMaxChars?: number; summaryChars?: number };
+};
+
+const PAGE_PX = { letter: { portrait: [816, 1056], landscape: [1056, 816] },
+                  a4:     { portrait: [794, 1123], landscape: [1123, 794] } } as const;
+
+/** Merge manifest defaults with caller options (caller wins), then set density. */
+export function optionsFor(assets: ThemeAssets, opts: RenderOptions = {}, density = 1): RenderOptions {
+  const d = assets.manifest.defaults ?? {};
+  return {
+    ...d, ...opts,
+    sections: { ...(d.sections ?? {}), ...(opts.sections ?? {}) },
+    layout:   { ...(d.layout ?? {}),   ...(opts.layout ?? {}) },
+    filter:   { ...(d.filter ?? {}),   ...(opts.filter ?? {}) },
+    vars:     { ...(d.vars ?? {}),     ...(opts.vars ?? {}), "--density": density.toFixed(3) },
+  };
+}
+
+/** Full standalone HTML. Same composition as tools/render_theme.py + ats_check.to_pdf. */
+export function buildDocument(ir: ResumeIR, assets: ThemeAssets, opts: RenderOptions = {}, density = 1) {
+  const r = render(ir, optionsFor(assets, opts, density));
+  const html =
+    `<!DOCTYPE html><html><head><meta charset="utf-8">` +
+    `<style>${assets.sharedCss}\n${assets.themeCss}</style></head><body>${r.html}</body></html>`;
+  return { html, warnings: r.warnings };
+}
+
+/** Render into an iframe. Returns the iframe once its layout is done. */
+export function mount(container: HTMLElement, html: string): Promise<HTMLIFrameElement> {
+  return new Promise((resolve) => {
+    const f = document.createElement("iframe");
+    f.style.cssText = "border:0;width:100%;height:100%";
+    f.srcdoc = html;
+    f.onload = () => resolve(f);
+    container.replaceChildren(f);
+  });
+}
+
+/** Height of the rendered .rz in CSS px — the only thing plan() needs from the browser. */
+export type Measure = (html: string) => Promise<number>;
+
+export const domMeasure = (host: HTMLElement): Measure => async (html) => {
+  const f = await mount(host, html);
+  const rz = f.contentDocument?.querySelector(".rz") as HTMLElement | null;
+  return rz ? rz.getBoundingClientRect().height : Infinity;
+};
+
+export type PlanOption =
+  | { kind: "shrink";   density: number; bodyPt: number; pages: number }
+  | { kind: "trim";     remove: string[]; density: number; bodyPt: number; pages: number }
+  | { kind: "overflow"; pages: number; bodyPt: number }
+  | { kind: "infeasible"; reason: string };
+
+export type Plan = {
+  /** a configuration satisfying the policy exists */
+  feasible: boolean;
+  /** true when trim:"ask" found a solution that removes bullets — the UI must let the user confirm */
+  needsChoice: boolean;
+  atOriginal: { pages: number; bodyPt: number };
+  best?: { density: number; bodyPt: number; pages: number; removed: string[] };
+  options: PlanOption[];
+  warnings: string[];
+};
+
+const FLOOR = 0.82;   // same as tools/fit.py — below this body text drops under readable size
+
+/**
+ * Pre-generation planner. Mirrors tools/fit.py:
+ *   1. density 1.0 → FLOOR by bisection
+ *   2. if still over, trim by priority (5 → 1), re-searching density each time
+ * Multi-column themes overflow *without* adding pages, so "pages" here is height / page-height,
+ * which is what the user experiences.
+ */
+export async function plan(ir: ResumeIR, assets: ThemeAssets, policy: FitPolicy, measure: Measure,
+                           opts: RenderOptions = {}): Promise<Plan> {
+  const m = assets.manifest;
+  const size = m.page?.size ?? "letter", orient = m.page?.orientation ?? "portrait";
+  const pageH = PAGE_PX[size][orient][1];
+  const bodyPx = m.baseBodyPx ?? 11;
+  const pt = (d: number) => Math.round(bodyPx * d * 10) / 10;   // WeasyPrint/Chrome: 1 CSS px ≈ 1 PDF pt at 96dpi print
+  const target = policy.pages ?? 1;
+  const minBodyPt = policy.minBodyPt ?? 10;
+  const warnings: string[] = [];
+
+  const pagesAt = async (density: number, minPriority?: number) => {
+    const o = { ...opts, filter: { ...(opts.filter ?? {}), ...(minPriority ? { minPriority } : {}) } };
+    const { html, warnings: w } = buildDocument(ir, assets, o, density);
+    for (const x of w) warnings.push(`${x.code}${x.path ? "@" + x.path : ""}`);
+    const h = await measure(html);
+    return Math.max(1, Math.ceil(h / pageH));
+  };
+
+  const p0 = await pagesAt(1);
+  const atOriginal = { pages: p0, bodyPt: pt(1) };
+  const options: PlanOption[] = [];
+
+  if (policy.mode === "original" || p0 <= target) {
+    if (p0 > target) options.push({ kind: "overflow", pages: p0, bodyPt: pt(1) });
+    return { feasible: true, needsChoice: false, atOriginal, best: { density: 1, bodyPt: pt(1), pages: p0, removed: [] }, options, warnings };
+  }
+
+  // floor by policy: don't go below minBodyPt
+  const floor = Math.max(FLOOR, minBodyPt / bodyPx);
+
+  const search = async (minPriority?: number) => {
+    if ((await pagesAt(floor, minPriority)) > target) return null;
+    let lo = floor, hi = 1;
+    for (let i = 0; i < 6; i++) {
+      const mid = (lo + hi) / 2;
+      if ((await pagesAt(mid, minPriority)) <= target) lo = mid; else hi = mid;
+    }
+    return lo;
+  };
+
+  // 1. shrink only
+  const d1 = await search();
+  if (d1 != null) {
+    options.push({ kind: "shrink", density: d1, bodyPt: pt(d1), pages: target });
+    return { feasible: true, needsChoice: false, atOriginal, best: { density: d1, bodyPt: pt(d1), pages: target, removed: [] }, options, warnings };
+  }
+
+  // 2. trim by priority — only if policy allows
+  if (policy.trim === "none") {
+    options.push({ kind: "overflow", pages: p0, bodyPt: pt(1) });
+    options.push({ kind: "infeasible", reason: `needs < ${minBodyPt}pt body or trimming` });
+    return { feasible: false, needsChoice: false, atOriginal, options, warnings };
+  }
+  for (const minP of [5, 4, 3, 2, 1]) {
+    const d = await search(minP);
+    if (d != null) {
+      const removed = bulletsAbove(ir, minP);
+      options.push({ kind: "trim", remove: removed, density: d, bodyPt: pt(d), pages: target });
+      options.push({ kind: "overflow", pages: p0, bodyPt: pt(1) });
+      return { feasible: true, needsChoice: policy.trim === "ask", atOriginal,
+               best: { density: d, bodyPt: pt(d), pages: target, removed }, options, warnings };
+    }
+  }
+  options.push({ kind: "overflow", pages: p0, bodyPt: pt(1) });
+  options.push({ kind: "infeasible", reason: "does not fit even at priority ≤ 1 and floor density" });
+  return { feasible: false, needsChoice: false, atOriginal, options, warnings };
+}
+
+/** IR paths of bullets with priority > minPriority (what a trim would remove). */
+export function bulletsAbove(ir: ResumeIR, minPriority: number): string[] {
+  const out: string[] = [];
+  for (const sec of ["experiences", "projects", "research"] as const) {
+    (ir[sec] ?? []).forEach((x, i) =>
+      (x.bullets ?? []).forEach((b, j) => {
+        const p = typeof b === "string" ? 99 : ((b as Bullet).priority ?? 99);
+        if (p > minPriority) out.push(`${sec}[${i}].bullets[${j}]`);
+      }));
+  }
+  return out;
+}
+
+/** Open the browser print dialog on a mounted iframe. The user picks "Save as PDF". */
+export function printCurrent(iframe: HTMLIFrameElement) {
+  iframe.contentWindow?.focus();
+  iframe.contentWindow?.print();
+}

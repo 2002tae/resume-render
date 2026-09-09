@@ -1,0 +1,50 @@
+/* folio — "7e Folio" 원본 복원. profile: safe
+   2줄 압축 이름 좌상 / 연락처 우상 / 요약 이름 아래 좌측 / 섹션마다 굵은-가는 룰 쌍 */
+.rz{
+  --paper:oklch(0.968 0.014 96); --ink:oklch(0.18 0.012 70); --mid:oklch(0.43 0.012 70);
+  --faint:oklch(0.57 0.012 70); --accent:oklch(0.47 0.16 35); --rule:oklch(0.84 0.012 70);
+  --density:1;
+  --fs:calc(10.6px * var(--density)); --lh:1.36;
+  --fs-name:calc(38px * var(--density)); --fs-sec:calc(11px * var(--density));
+  --fs-meta:calc(9.4px * var(--density)); --fs-entry:calc(11.2px * var(--density));
+  --fs-lede:calc(11px * var(--density));
+  --sp-sec:calc(7px * var(--density)); --sp-item:calc(4.5px * var(--density));
+  --sp-bul:calc(2.4px * var(--density)); --rw:1px;
+  padding:calc(40px * var(--density)) calc(42px * var(--density));
+  background:var(--paper); color:var(--ink);
+  font-family:'Archivo','Helvetica Neue',sans-serif; font-size:var(--fs);
+  /* WeasyPrint 는 font-stretch 를 무시한다(실측) — 압축은 별도 인스턴스 패밀리로 */ line-height:var(--lh);
+}
+/* 헤더: 이름(좌, 2줄) + 요약(좌, 이름 아래) / 연락처(우, 세로) */
+.rz-basics{display:grid;grid-template-columns:minmax(0,1fr) auto;column-gap:24px;align-items:start;
+  padding-bottom:calc(var(--sp-sec) * 1.4)}
+.rz-name{grid-column:1;grid-row:1;margin:0;max-width:7ch;font-family:'ArchivoCond','Archivo',sans-serif;
+  font-size:var(--fs-name);font-weight:800;line-height:.9;text-transform:uppercase;letter-spacing:-.01em}
+.rz-headline{display:none}
+.rz-basics .rz-summary--header{grid-column:1;grid-row:2;margin:10px 0 0;max-width:62ch;font-size:var(--fs-lede);line-height:1.38}
+.rz-contacts{grid-column:2;grid-row:1 / span 2;align-self:end;text-align:right;font-size:var(--fs-meta);
+  line-height:1.75;color:var(--mid)}
+.rz-contact{display:block}
+/* 요약을 헤더 그리드의 좌측 2행에 — 섹션이지만 basics 바로 뒤라 시각적으로 이어진다 */
+
+/* 굵은-가는 룰 쌍 */
+/* 원본 룰 쌍: 굵은 선(3px) 바로 아래 2px 띄고 가는 선(1px), 그 아래 라벨 */
+.rz-section{display:flex;flex-direction:column;gap:var(--sp-item);padding-top:2px;
+  margin-top:var(--sp-sec);border-top:3px solid var(--ink)}
+.rz-section-label{margin:0;padding-top:4px;border-top:var(--rw) solid var(--ink);
+  font-family:'ArchivoCond','Archivo',sans-serif;font-size:var(--fs-sec);font-weight:800;letter-spacing:.02em;text-transform:uppercase}
+.rz-entries{display:flex;flex-direction:column;gap:var(--sp-item)}
+
+.rz-entry-head{display:flex;flex-wrap:wrap;align-items:baseline;column-gap:8px}
+.rz-title{font-size:var(--fs-entry);font-weight:700}
+.rz-org{font-weight:400;color:var(--mid)}
+.rz-org::before{content:"· ";color:var(--faint)}
+.rz-dates{margin-left:auto;font-size:var(--fs-meta);font-weight:600;color:var(--accent);white-space:nowrap}
+.rz-sub,.rz-coursework{margin:1px 0 0;color:var(--mid)}
+.rz-kicker{font-family:'ArchivoCond','Archivo',sans-serif;font-weight:800;text-transform:uppercase;font-size:1.06em;
+  color:var(--accent);margin-right:6px}
+.rz-awards{margin:0}
+.rz-bullets{display:flex;flex-direction:column;gap:var(--sp-bul);margin-top:2px}
+/* 원본은 마커 없음 */
+.rz-bullet{padding-left:0}
+.rz-skills{column-gap:10px}

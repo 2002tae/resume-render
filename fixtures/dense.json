@@ -1,0 +1,100 @@
+{
+  "version": "1.0",
+  "meta": { "label": "DE", "source": "markdown" },
+  "basics": {
+    "name": "Taemin Kang",
+    "contacts": [
+      { "kind": "email",    "value": "taemin.kang@gmail.com" },
+      { "kind": "phone",    "value": "+1 (814) 555-0100" },
+      { "kind": "linkedin", "value": "linkedin.com/in/taemin-kang" },
+      { "kind": "github",   "value": "github.com/2002tae" },
+      { "kind": "website",  "value": "artemiscareer.com" }
+    ]
+  },
+  "summary": {
+    "style": "paragraph",
+    "text": "Data engineer who builds and operates production data infrastructure end-to-end. Solo-built a 75 GB, 120M+ row market-data system with bitemporal point-in-time versioning, daily entity-state reconciliation across ~3,900 entities, self-healing backfills, and standing data-quality automation. Also ship a live AI platform that ingests 180K+ records from nine heterogeneous external sources with schema normalization, multi-tier caching, and CI-gated API contracts."
+  },
+  "education": [
+    {
+      "school": "Pennsylvania State University",
+      "location": "State College, PA",
+      "dates": { "raw": "Expected May 2027" },
+      "degree": "B.S. Computational Data Science & Statistics (Double Major)",
+      "minor": "Mathematics",
+      "gpa": { "label": "Major GPA", "value": "3.54", "scale": "4.0" },
+      "coursework": ["Computer Structures and Algorithms", "Big Data (MapReduce, Spark)", "Database Systems", "Machine Learning", "Applied Data Mining (graduate)", "Linear Algebra"]
+    }
+  ],
+  "experiences": [
+    {
+      "key": "artemis",
+      "title": "Solo Developer & Product Owner",
+      "org": "Artemis — AI Career Platform (artemiscareer.com)",
+      "dates": { "raw": "Mar 2026 – Present" },
+      "bullets": [
+        { "text": "Engineered a Postgres-native async ingestion pipeline (Procrastinate cron) across major ATS platforms — **Greenhouse, Ashby, Lever, Workday, SmartRecruiters, Workable, and Oracle Recruiting Cloud** — plus **LinkedIn and Indeed**, normalizing heterogeneous schemas into a shared index of **180K+ postings**.", "priority": 1 },
+        { "text": "Designed a **multi-tier cache** (normalized-URL → ATS API → metered LLM) with SHA-256 content-hash deduplication and cross-source identity merge, so duplicate records resolve on a **$0 path** instead of re-triggering paid extraction.", "priority": 1 },
+        { "text": "Built **record-lifecycle hygiene** over that index — active/expired classification, dead-link and garbage-record detection, and periodic revalidation — so downstream scoring runs against records that are still valid.", "priority": 2 },
+        { "text": "Built the backend on FastAPI · SQLModel · PostgreSQL 17 with a 25-table **row-level-security** schema and contract-first Pydantic → OpenAPI → TypeScript codegen **gated in CI**, eliminating client/schema drift.", "priority": 2 },
+        { "text": "Integrated Google and Microsoft **OAuth** with Gmail / Outlook and Calendar via **Cloud Pub/Sub push receivers and Microsoft Graph webhooks**, with a scope-isolated encrypted token store and automatic subscription renewal.", "priority": 3 },
+        { "text": "Self-host a fine-tuned LLM (Qwen 3.6 9B, QLoRA → **vLLM with NVFP4 quantization**) plus an embedding retrieval layer, with per-call cost metering and a CI gate on prompt changes.", "priority": 2 }
+      ]
+    },
+    {
+      "key": "kdic",
+      "title": "Intelligence Analyst",
+      "org": "Korea Defense Intelligence Command",
+      "dates": { "raw": "Dec 2023 – Jun 2025" },
+      "bullets": [
+        { "text": "Built a Python NLP pipeline that classified 150+ unstructured intelligence reports, cutting manual analysis time **60%**.", "priority": 1 },
+        { "text": "Developed an anomaly-detection system flagging high-priority events at **85% precision**.", "priority": 2 }
+      ]
+    }
+  ],
+  "projects": [
+    {
+      "key": "eureka",
+      "name": "Project Eureka",
+      "subtitle": "Korean-Market Data Infrastructure",
+      "role": "solo",
+      "dates": { "raw": "Feb 2026 – Present" },
+      "bullets": [
+        { "text": "Architected and operate a **75 GB PostgreSQL + TimescaleDB** system — **over 120M rows** across 89 tables and 18 hypertables — ingesting from **26 sources** (REST and SDMX APIs plus three anti-bot crawlers) on **18 systemd timers** with a dead-letter retry queue and a ~30-second intraday event daemon.", "priority": 1 },
+        { "text": "Implemented **bitemporal point-in-time versioning** (vintage-dated, UPSERT-only history) and an **amendment-supersession resolver over 135K record versions** that reconstructs each record's true original publication timestamp — closing a correctness defect in which later amendments masked when data actually became available.", "priority": 1 },
+        { "text": "Maintain a **daily-reconciled slowly-changing entity dimension**: ~2,800 active entities out of 3,900+ historical, with roughly **50 state transitions per day** across an eight-state status model, rebuilt daily rather than snapshotted — preserving full history including retired entities.", "priority": 1 },
+        { "text": "Operate **self-healing multi-day backfills** (file-lock + checkpoint + resumable) that reconstructed 342K rows spanning 2008–2023 with no manual intervention, plus daily automated health and coverage alerting.", "priority": 2 },
+        { "text": "Run **standing data-quality automation** — daily cross-table reconciliation, staleness detection, coverage-gap and dimension-diff audits — with an audit yielding **0 future-dated rows, 0 duplicate keys, and 0 time-series gaps** across core tables.", "priority": 2 },
+        { "text": "Built a read-only **schema-and-lineage explorer** rendering **97 table relationships**, column-level lineage, and eight-band freshness into a single self-contained HTML view.", "priority": 3 },
+        { "text": "Deployed **KR-FinBERT** GPU inference over **860K+ text rows** (BFloat16, torch.compile, CUDA-OOM-adaptive batching) and implemented **121 registered features across 3 layers**.", "priority": 3 }
+      ]
+    }
+  ],
+  "research": [
+    {
+      "key": "sure", "role": "Undergraduate Researcher", "title": "Bayesian Volatility & Tail-Risk Modeling",
+      "institution": "Penn State SURE Program", "department": "Department of Statistics",
+      "dates": { "raw": "May – Jul 2026" }, "status": "completed",
+      "bullets": [ { "text": "Built a conditional predictive-distribution pipeline over **30 years** of index data (1996–2026), implementing GARCH and particle-filter models from scratch and validating each by synthetic parameter recovery.", "priority": 1 } ]
+    },
+    {
+      "key": "gnn", "role": "Undergraduate Researcher", "title": "Power-System Stability & Oscillation Prediction",
+      "institution": "Penn State EECS Undergraduate Research Program",
+      "dates": { "raw": "Incoming Fall 2026" }, "status": "incoming",
+      "bullets": [ { "text": "Selected for a **funded** research award building learning-based models for power-system stability assessment from PMU time-series measurement data.", "priority": 1 } ]
+    }
+  ],
+  "skills": [
+    { "label": "Languages", "items": ["Python", "SQL", "Scala", "R"] },
+    { "label": "Databases & Storage", "items": ["PostgreSQL", "TimescaleDB", "pgvector", "schema design & data modeling", "bitemporal / slowly-changing dimensions", "query optimization", "partitioning"] },
+    { "label": "Pipelines & Orchestration", "items": ["ETL / ELT", "async Python", "Procrastinate", "systemd timers", "cron scheduling", "dead-letter queues", "idempotent & resumable backfills", "Apache Spark (MapReduce)"] },
+    { "label": "Data Quality & Reliability", "items": ["point-in-time correctness", "reconciliation & coverage audits", "staleness detection", "data lineage", "observability & alerting", "anomaly detection"] },
+    { "label": "Backend & Platform", "items": ["FastAPI", "SQLModel", "Alembic", "REST API design", "OpenAPI contract-first codegen", "row-level security", "OAuth (Gmail / Microsoft Graph)", "Cloud Pub/Sub", "webhooks", "Supabase"] },
+    { "label": "Tooling", "items": ["CI/CD (GitHub Actions)", "Git", "Linux", "pandas", "NumPy", "PyTorch"] },
+    { "label": "Languages (spoken)", "items": ["Korean (Native)", "English (Fluent)", "Mandarin Chinese (HSK 5, 270/300)"] }
+  ],
+  "awards": [
+    { "title": "Sung and Fumi Lee Scholarship", "issuer": "Penn State (Fall 2026)" },
+    { "title": "Mu Sigma Rho, National Statistics Honor Society" }
+  ]
+}

@@ -1,0 +1,59 @@
+/* masthead — "7a Masthead" 원본 복원. profile: safe
+   이름을 잡지 마스트헤드처럼 (Bodoni, 2줄 중앙), 굵은 룰 아래 이탤릭 커버라인.
+   원본의 상단 "DATA ENGINEERING / NO. 01" 캡션과 이름 위 bar 는 제외(요청). 연락처는 이름 아래. */
+.rz{
+  --paper:oklch(0.985 0.008 90); --ink:oklch(0.17 0.012 50); --mid:oklch(0.43 0.012 50);
+  --faint:oklch(0.57 0.012 50); --accent:oklch(0.42 0.13 25); --rule:oklch(0.83 0.012 50);
+  --density:1;
+  --fs:calc(10.4px * var(--density)); --lh:1.4;
+  --fs-name:calc(50px * var(--density)); --fs-sec:calc(9.2px * var(--density));
+  --fs-meta:calc(9.6px * var(--density)); --fs-entry:calc(13.2px * var(--density));
+  --fs-lede:calc(11.4px * var(--density));
+  --sp-sec:calc(6px * var(--density)); --sp-item:calc(4.5px * var(--density));
+  --sp-bul:calc(2.2px * var(--density)); --rw:1px;
+  padding:calc(40px * var(--density)) calc(44px * var(--density));
+  background:var(--paper); color:var(--ink);
+  /* 원본 본문은 Archivo(산세리프) — 제목·kicker 만 Bodoni */
+  font-family:'Archivo','Helvetica Neue',sans-serif; font-size:var(--fs); line-height:var(--lh);
+}
+/* 마스트헤드: 이름 중앙 2줄, 아래 굵은 룰 */
+.rz-basics{text-align:center;padding-bottom:calc(var(--sp-sec) * 1.4);
+  border-bottom:calc(var(--rw) * 2.5) solid var(--ink)}
+/* 이름을 단어별로 쌓는다: 폭을 가장 긴 단어로 (max-width:6ch 는 긴 성을 잘랐다, 실측) */
+.rz-name{margin:0 auto;width:min-content;font-family:'Bodoni Moda',Didot,serif;font-size:var(--fs-name);
+  font-weight:400;line-height:.88;text-transform:uppercase}
+.rz-headline{display:none}
+.rz-contacts{margin:10px 0 0;font-size:var(--fs-meta);color:var(--mid);text-transform:uppercase}
+.rz-contact{display:inline}
+.rz-contact:not(:last-child)::after{content:"   ·   ";color:var(--faint)}
+
+/* 커버라인: 이탤릭 요약 중앙, 가는 룰로 닫음 */
+.rz-section[data-section="summary"]{padding-top:calc(var(--sp-sec) * 1.4);
+  padding-bottom:calc(var(--sp-sec) * 1.2);border-bottom:var(--rw) solid var(--ink)}
+.rz-section[data-section="summary"] .rz-section-label{display:none}
+/* 요약 폭을 넓혀 세로 공간 확보 */
+.rz-summary{margin:0 auto;max-width:96ch;font-family:'Newsreader','Source Serif 4',Georgia,serif;font-style:italic;
+  font-size:var(--fs-lede);line-height:1.36;text-align:center;color:var(--ink)}
+
+.rz-section{display:flex;flex-direction:column;gap:var(--sp-item);padding-top:var(--sp-sec)}
+.rz-section-label{margin:0;font-size:var(--fs-sec);font-weight:400;letter-spacing:.3em;
+  text-transform:uppercase;color:var(--accent);text-align:center}
+.rz-entries{display:flex;flex-direction:column;gap:var(--sp-item);
+  border-top:var(--rw) solid var(--rule);padding-top:var(--sp-item)}
+.rz-section[data-section="summary"] .rz-entries{border-top:none;padding-top:0}
+
+.rz-entry-head{display:flex;flex-wrap:wrap;align-items:baseline;column-gap:8px}
+.rz-title{font-family:'Bodoni Moda',Didot,serif;font-size:var(--fs-entry);font-weight:500}
+.rz-org{font-family:'Archivo','Helvetica Neue',sans-serif;font-size:.78em;text-transform:uppercase;
+  color:var(--mid)}
+.rz-dates{margin-left:auto;font-family:'Archivo','Helvetica Neue',sans-serif;font-size:var(--fs-meta);
+  text-transform:uppercase;color:var(--faint);white-space:nowrap}
+.rz-sub,.rz-coursework{margin:1px 0 0;color:var(--mid)}
+.rz-kicker{font-family:'Bodoni Moda',Didot,serif;font-weight:600;font-size:1.06em;
+  color:var(--ink);margin-right:5px}
+.rz-awards{margin:0;color:var(--mid)}
+
+.rz-bullets{display:flex;flex-direction:column;gap:var(--sp-bul);margin-top:2px}
+/* 원본은 마커 없이 문장만 — 마커 없음 */
+.rz-bullet{padding-left:0}
+.rz-skills{column-gap:12px;row-gap:calc(var(--sp-bul) * 1.6)}

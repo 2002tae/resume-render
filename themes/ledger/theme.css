@@ -1,0 +1,73 @@
+/* ledger — "1e Ledger" 원본 재현. profile: safe
+   연차보고서 색인 형식: 번호 매긴 섹션·엔트리, 점선 리더, 크림 용지 */
+.rz{
+  --paper:oklch(0.976 0.011 88); --ink:oklch(0.26 0.022 258); --mid:oklch(0.45 0.02 258);
+  --faint:oklch(0.62 0.018 258); --accent:oklch(0.46 0.12 27); --rule:oklch(0.82 0.015 258);
+  --mono:'IBM Plex Mono',ui-monospace,Menlo,monospace;
+  --density:1; counter-reset:sec;
+  --fs:calc(11px * var(--density)); --lh:1.34;
+  --fs-name:calc(40px * var(--density)); --fs-sec:calc(9.6px * var(--density)); --fs-meta:calc(9.6px * var(--density)); --fs-entry:calc(12.6px * var(--density));
+  --tr-mono:.1em;
+  --sp-sec:calc(8.0px * var(--density)); --sp-item:calc(5.0px * var(--density));
+  --sp-bul:calc(2.5px * var(--density)); --rw:1px;
+  padding:calc(46px * var(--density)) calc(50px * var(--density)); background:var(--paper); color:var(--ink);
+  font-family:'Source Serif 4',Georgia,serif; font-size:var(--fs); line-height:var(--lh);
+}
+/* 상단: 좌 CURRICULUM VITAE 커커 / 우 DATA ENGINEERING + 연락처 */
+.rz-basics{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:start;
+  column-gap:24px;padding-bottom:calc(var(--sp-sec) * 1.2)}
+.rz-name{grid-column:1;grid-row:2;margin:6px 0 0;font-size:var(--fs-name);font-weight:400;
+  line-height:1}
+/* 원본은 헤드라인이 우상단이라 이름보다 먼저 추출된다(실측). safe 테마이므로 이름 아래로 내린다. */
+.rz-headline{grid-column:1;grid-row:3;margin:6px 0 0;font-family:var(--mono);font-size:var(--fs-meta);
+  text-transform:uppercase;color:var(--accent)}
+.rz-contacts{grid-column:2;grid-row:1 / span 3;align-self:end;text-align:right;font-family:var(--mono);
+  font-size:var(--fs-meta);line-height:1.7;color:var(--mid)}
+
+/* 번호 매긴 섹션 */
+.rz-section{display:flex;flex-direction:column;gap:var(--sp-item);
+  padding-top:var(--sp-sec);margin-top:var(--sp-sec);
+  border-top:var(--rw) solid var(--rule);counter-reset:ent}
+/* 원본(캡처 재확인): 번호·라벨 모두 모노 대문자, accent 색 */
+.rz-section-label{counter-increment:sec;margin:0;display:flex;align-items:baseline;gap:11px;
+  font-family:var(--mono);font-size:var(--fs-sec);font-weight:500;letter-spacing:var(--tr-mono);
+  text-transform:uppercase;color:var(--accent)}
+.rz-section-label::before{content:counter(sec,decimal-leading-zero);color:var(--accent)}
+.rz-entries{display:flex;flex-direction:column;gap:var(--sp-item)}
+
+/* 점선 리더로 제목과 날짜를 잇는다 */
+.rz-entry-head{display:flex;align-items:baseline;flex-wrap:wrap;column-gap:7px}
+/* org 의 flex-basis 60%: 제목이 줄의 40% 를 넘으면 org+리더+날짜가 통째로 다음 줄로 (flex-wrap) */
+.rz-org{flex:1 1 auto;min-width:0;white-space:normal}
+/* research 는 role — title 합성으로 제목이 길다. WeasyPrint flex 는 org 를 눌러 세로로 꺾으므로(실측)
+   research 에서는 org+리더+날짜를 둘째 줄로 고정한다 */
+.rz-section[data-section="research"] .rz-title{flex-basis:100%}
+.rz-title{font-size:var(--fs-entry);font-weight:600}
+/* 점선 리더: org 자체를 flex 컨테이너로 만들어야 ::after 가 flex 아이템이 되어 늘어난다.
+   span 안의 ::after 에 flex:1 을 주면 아무 효과가 없다(실측). */
+/* 점선 리더: org 가 flex 컨테이너여야 ::after 가 늘어난다. 점은 진하게, 줄 세로 중앙(원본) */
+.rz-org{display:flex;flex:1;align-items:baseline;min-width:0;font-style:italic;color:var(--mid)}
+.rz-org::after{content:"";flex:1;min-width:24px;border-bottom:1.5px dotted var(--faint);margin:0 8px .38em}
+.rz-dates{font-family:var(--mono);font-size:var(--fs-meta);color:var(--faint);white-space:nowrap}
+.rz-sub,.rz-coursework{margin:1px 0 0;color:var(--mid)}
+.rz-kicker{font-family:var(--mono);font-size:calc(var(--fs-meta) * .92);text-transform:uppercase;
+  color:var(--accent);margin-right:7px}
+.rz-summary{margin:0}
+.rz-awards{margin:0;color:var(--mid)}
+
+/* 번호 매긴 불릿 */
+.rz-bullets{display:flex;flex-direction:column;gap:var(--sp-bul);margin-top:3px}
+.rz-bullet{counter-increment:ent;position:relative;padding-left:24px}
+.rz-bullet::before{content:counter(ent,decimal-leading-zero);position:absolute;left:0;
+  font-family:var(--mono);font-size:calc(var(--fs-meta) * .9);color:var(--faint)}
+
+/* 스킬 행은 직장 항목이 아니다 — 원본은 불릿 간격(--sp-bul)을 쓴다. --sp-item 을 상속하면
+   행 사이가 3~4배 벌어져 부자연스럽다(실측). coursework/awards 도 같은 이유로 촘촘하게. */
+/* WeasyPrint 버그: flex 컨테이너의 자식이 grid 면 행 높이가 2~3배로 계산된다(실측).
+   skills 행은 grid 이므로 컨테이너를 block 으로 두고 간격은 margin 으로 준다. */
+.rz-section[data-section="skills"] .rz-skill + .rz-skill,
+.rz-section[data-section="languages"] .rz-skill + .rz-skill{margin-top:var(--sp-bul)}
+/* 원본 스킬 kicker: 세리프 이탤릭 + 마침표 ("Languages.") accent 색 */
+.rz-skills>.rz-kicker{font-family:'Source Serif 4',Georgia,serif;font-style:italic;font-size:var(--fs);
+  text-transform:none;letter-spacing:0;color:var(--accent);margin-right:6px}
+.rz-skills>.rz-kicker::after{content:"."}

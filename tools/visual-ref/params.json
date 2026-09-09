@@ -1,0 +1,15 @@
+{
+ "academic": 0.91,
+ "classic": 0.865,
+ "colorfield": 0.899,
+ "folio": 0.876,
+ "marginalia": 0.82,
+ "masthead": 0.899,
+ "ledger": 0.831,
+ "minimal": 0.82,
+ "numerals": 0.854,
+ "standfirst": 0.876,
+ "broadsheet": 0.978,
+ "spread": 0.91,
+ "plain": 1.0
+}

@@ -1,0 +1,29 @@
+{
+  "version": "1.0",
+  "basics": {
+    "name": "Jamie Park",
+    "contacts": [
+      "jamie.park@psu.edu",
+      "+1 (555) 010-2233"
+    ]
+  },
+  "education": [
+    {
+      "school": "Pennsylvania State University",
+      "degree": "B.S. Computer Science",
+      "dates": "Expected May 2029",
+      "coursework": [
+        "Intro to Programming"
+      ]
+    }
+  ],
+  "skills": [
+    {
+      "label": "Languages",
+      "items": [
+        "Python",
+        "Java"
+      ]
+    }
+  ]
+}

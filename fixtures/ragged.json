@@ -1,0 +1,42 @@
+{
+  "version": "1.0",
+  "basics": {
+    "name": "Alexandra Konstantinopoulos-Whitfield",
+    "contacts": [
+      "a.konstantinopoulos.whitfield@verylongdomainname.example.com"
+    ]
+  },
+  "experiences": [
+    {
+      "title": "Engineer",
+      "org": "",
+      "dates": "2024 \u2013 2025",
+      "bullets": [
+        "Did one thing."
+      ]
+    },
+    {
+      "title": "Senior Staff Research Engineer, Distributed Systems and Platform Infrastructure Group",
+      "org": "A Company With A Genuinely Very Long Legal Name Incorporated",
+      "bullets": [
+        "Bullet 1 describing a substantial piece of engineering work in some detail.",
+        "Bullet 2 describing a substantial piece of engineering work in some detail.",
+        "Bullet 3 describing a substantial piece of engineering work in some detail.",
+        "Bullet 4 describing a substantial piece of engineering work in some detail.",
+        "Bullet 5 describing a substantial piece of engineering work in some detail.",
+        "Bullet 6 describing a substantial piece of engineering work in some detail.",
+        "Bullet 7 describing a substantial piece of engineering work in some detail.",
+        "Bullet 8 describing a substantial piece of engineering work in some detail."
+      ]
+    }
+  ],
+  "projects": [
+    {
+      "name": "P",
+      "bullets": []
+    }
+  ],
+  "skills": [
+    "https://github.com/example/a-repository-with-an-extremely-long-name-that-cannot-wrap"
+  ]
+}

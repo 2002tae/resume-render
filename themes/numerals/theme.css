@@ -1,0 +1,64 @@
+/* numerals — from "3e Numerals". profile: safe. CSS counter 로 섹션 번호 */
+.rz{
+  --paper:oklch(0.982 0.008 70); --ink:oklch(0.2 0.014 40); --mid:oklch(0.44 0.014 40);
+  --faint:oklch(0.58 0.014 40); --accent:oklch(0.55 0.14 35); --rule:oklch(0.85 0.012 40);
+  --density:1; counter-reset:sec;
+  --fs:calc(10.6px * var(--density)); --lh:1.34;
+  --fs-name:calc(66px * var(--density)); --fs-sec:calc(9.6px * var(--density)); --fs-meta:calc(9.8px * var(--density)); --fs-entry:calc(11.2px * var(--density)); --fs-lede:calc(13px * var(--density));
+  --tr-sec:.14em;
+  --sp-sec:calc(6px * var(--density)); --sp-item:calc(4px * var(--density));
+  --sp-bul:calc(2px * var(--density)); --rw:1px;
+  padding:calc(44px * var(--density)); background:var(--paper); color:var(--ink);
+  font-family:'Space Grotesk','Helvetica Neue',sans-serif;
+  font-size:var(--fs); line-height:var(--lh);
+}
+.rz-basics{display:grid;grid-template-columns:minmax(0,1fr) auto;column-gap:24px;align-items:end;
+  padding-bottom:calc(var(--sp-sec) * 1.4)}
+.rz-name{grid-column:1;margin:0;font-family:'Instrument Serif',Georgia,serif;font-size:var(--fs-name);
+  font-weight:400;letter-spacing:.01em;line-height:.95}
+.rz-headline{display:none}
+.rz-contacts{grid-column:2;grid-row:1 / span 2;text-align:right;font-size:var(--fs-meta);
+  line-height:1.7;color:var(--mid)}
+.rz-contact{display:block}
+
+.rz-section{display:flex;flex-direction:column;gap:var(--sp-item);padding-top:var(--sp-sec);
+  margin-top:calc(var(--sp-sec) * 1.2)}
+.rz-section-label{counter-increment:sec;margin:0;display:flex;align-items:baseline;gap:10px;
+  font-family:'Space Grotesk',Arial,sans-serif;font-size:var(--fs-sec);font-weight:500;letter-spacing:var(--tr-sec);text-transform:uppercase;
+  padding-bottom:3px;border-bottom:var(--rw) solid var(--rule)}
+.rz-section-label::before{content:counter(sec,decimal-leading-zero);
+  font-family:'Instrument Serif',Georgia,serif;font-size:calc(var(--fs-sec) * 1.7);
+  font-weight:400;letter-spacing:0;color:var(--accent)}
+.rz-entries{display:flex;flex-direction:column;gap:var(--sp-item)}
+
+.rz-entry-head{display:flex;flex-wrap:wrap;align-items:baseline;column-gap:8px}
+/* 원본 핵심: 디스플레이 세리프 제목 vs 그로테스크 본문 (전사) */
+/* Instrument Serif 는 폭이 좁은 디스플레이체라 소형에선 찌부돼 보인다 — 크기를 더 키우고
+   양의 자간을 살짝(.02em, 추출 안전 범위) 준다 */
+/* Instrument Serif 는 가변 폭 축이 없어 글자 자체를 넓힐 수 없다(폰트 제약). 크기만 더 키운다 */
+.rz-title{font-family:'Instrument Serif',Georgia,serif;font-size:calc(var(--fs-entry) * 1.5);
+  font-weight:400;letter-spacing:.006em}
+/* 소속·기관은 원본 .66em 이 2페이지 밀도에서도 안 읽힌다(피드백) — .86em */
+.rz-org{font-family:'Space Grotesk',Arial,sans-serif;font-size:.86em;color:var(--mid)}
+.rz-dates{margin-left:auto;font-family:'Space Grotesk',Arial,sans-serif;
+  font-size:var(--fs-meta);color:var(--faint);white-space:nowrap}
+.rz-sub,.rz-coursework{margin:1px 0 0;color:var(--mid)}
+.rz-kicker{font-weight:700;color:var(--accent);text-transform:uppercase;
+  font-size:calc(var(--fs-meta) * .95);margin-right:6px}
+.rz-summary{margin:0;font-size:var(--fs-lede);line-height:1.42}
+.rz-awards{margin:0;color:var(--mid)}
+
+.rz-bullets{display:flex;flex-direction:column;gap:var(--sp-bul);margin-top:2px}
+/* 원본: 마커 없음 */
+.rz-bullet{padding-left:0}
+/* 원본은 라벨이 한 단어라 인라인으로 정렬돼 보였다. 실제 IR 라벨은 길고 길이가 제각각이라
+   인라인이면 값의 시작점이 들쭉날쭉하고 줄바꿈 시 리듬이 깨진다(실측) — 고정 트랙으로 정렬.
+   --lab-w 는 테마 폰트 기준 가장 긴 라벨이 한 줄에 들어가는 폭. */
+.rz-skill .rz-kicker{grid-column:1;grid-row:1;margin:0}
+
+/* 스킬 행은 직장 항목이 아니다 — 원본은 불릿 간격(--sp-bul)을 쓴다. --sp-item 을 상속하면
+   행 사이가 3~4배 벌어져 부자연스럽다(실측). coursework/awards 도 같은 이유로 촘촘하게. */
+/* WeasyPrint 버그: flex 컨테이너의 자식이 grid 면 행 높이가 2~3배로 계산된다(실측).
+   skills 행은 grid 이므로 컨테이너를 block 으로 두고 간격은 margin 으로 준다. */
+.rz-section[data-section="skills"] .rz-skill + .rz-skill,
+.rz-section[data-section="languages"] .rz-skill + .rz-skill{margin-top:var(--sp-bul)}

@@ -1,0 +1,52 @@
+{
+  "name": "resume-render",
+  "version": "0.1.0",
+  "description": "IR \u2192 canonical HTML r\u00e9sum\u00e9 renderer. Templates are CSS only. Every theme is ATS-checked.",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist",
+    "themes",
+    "fonts",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsc -p .",
+    "check": "python3 tools/lint_theme.py themes/*/theme.css && python3 tools/visual_check.py && python3 tools/ats_check.py",
+    "prepare": "tsc -p ."
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "typescript": "^6.0.0"
+  },
+  "author": "Taemin Kang",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/2002tae/resume-render"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "keywords": [
+    "resume",
+    "cv",
+    "pdf",
+    "template",
+    "ats",
+    "weasyprint",
+    "typescript"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./browser": {
+      "types": "./dist/browser.d.ts",
+      "import": "./dist/browser.js"
+    },
+    "./themes/*": "./themes/*"
+  }
+}

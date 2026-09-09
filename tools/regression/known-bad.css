@@ -1,0 +1,8 @@
+/* 과거에 실제로 발생했던 결함들을 재현한 회귀 픽스처 */
+@import "_shared.css";                      /* 실측: 해석 안 되어 A4 렌더 + 불릿 이중 */
+.rz-kicker{letter-spacing:.8pt}             /* 실측: C O U R S E W O R K */
+.rz-headline{letter-spacing:.12em}          /* 실측: DATA E N G I N E E R */
+.rz-contact{overflow-wrap:anywhere}         /* 실측: taemin.kang@ / gmail.com 분리 */
+.rz-skill{display:grid;grid-template-columns:64pt 1fr}   /* 실측: 라벨 없으면 트랙1 낙하 */
+.rz-section{column-count:2}                 /* 다단 */
+.rz-entry{position:absolute;top:0}          /* 읽기 순서 파괴 */

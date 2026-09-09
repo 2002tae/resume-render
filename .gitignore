@@ -1,0 +1,7 @@
+node_modules/
+dist/
+out/
+*.pdf
+__pycache__/
+tools/visual-ref/*.diff*.png
+.DS_Store

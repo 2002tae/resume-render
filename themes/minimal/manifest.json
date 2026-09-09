@@ -1,0 +1,79 @@
+{
+  "id": "minimal",
+  "name": "Minimal",
+  "blurb": "Zero rules \u2014 weight and space only",
+  "version": "0.1.0",
+  "source": "1d High-contrast minimal",
+  "engine": "css",
+  "profile": "safe",
+  "origin": "builtin",
+  "page": {
+    "size": "letter",
+    "orientation": "portrait"
+  },
+  "supports": {
+    "sections": [
+      "basics",
+      "summary",
+      "education",
+      "experiences",
+      "projects",
+      "research",
+      "skills",
+      "awards"
+    ],
+    "options": [
+      "typography.baseSize",
+      "color.accent",
+      "density",
+      "sections.order",
+      "sections.include",
+      "fit.pages"
+    ]
+  },
+  "fonts": [
+    {
+      "family": "Libre Franklin",
+      "license": "OFL"
+    }
+  ],
+  "ats": {
+    "verified": true,
+    "textComplete": true,
+    "orderPreserved": "all",
+    "interleaveWarnings": 0,
+    "fixtures": [
+      "dense",
+      "minimal",
+      "ragged",
+      "typical"
+    ],
+    "extractors": [
+      "pdftotext -layout",
+      "pdftotext"
+    ],
+    "checkedAt": "2026-09-08",
+    "note": "Text-layer integrity, not a vendor guarantee. See docs/template-contract.md \u00a75."
+  },
+  "baseBodyPx": 11.5,
+  "note_baseBodyPx": "\ubcf8\ubb38 --fs \uc758 density=1 \uae30\uc900\uac12. bodyPt \u2248 baseBodyPx \u00d7 density (WeasyPrint \ub294 CSS px \ub97c PDF pt \ub85c 1:1 \uc500, \uc2e4\uce21)",
+  "defaults": {
+    "layout": {
+      "skillsGrid": true
+    },
+    "sections": {
+      "order": [
+        "summary",
+        "education",
+        "experiences",
+        "projects",
+        "research",
+        "skills",
+        "awards"
+      ]
+    }
+  },
+  "limits": {
+    "summaryChars": 400
+  }
+}
