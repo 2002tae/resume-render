@@ -455,8 +455,10 @@ POST /resume-tailor/render
 
 | 등급 | 테마 | 원인 |
 |---|---|---|
-| A | plain · classic · standfirst · ledger · numerals · minimal · folio · marginalia | 3 엔진 × 5 케이스 전부 식별 |
-| B | academic · masthead · colorfield | W14 — pdfminer 가 우측 정렬 날짜 하나를 다른 엔트리에 붙임 (poppler·pypdf 정상) |
-| B~C | broadsheet · spread | poppler `-layout` 이 컬럼을 섞음. 다단의 대가 |
+| A · `ats-safe` | plain · classic · standfirst · numerals · minimal · folio · marginalia | 3 엔진 × 5 케이스 전부 식별 |
+| B · `distinctive` | academic · masthead · colorfield · ledger · broadsheet | W14 — pdfminer 가 우측 정렬 날짜를 이웃 엔트리에 붙임 (poppler·pypdf 정상). ledger 는 WeasyPrint 70 에서 B 로 떨어졌다 — 우측 날짜 디자인은 줄 위치에 민감하다. broadsheet 은 poppler -layout 컬럼 섞임 |
+| C · `distinctive-limited` | spread | 랜드스케이프 다단: 이름이 첫 줄이 아닌 케이스 있음 |
+
+**기계 필드:** 각 매니페스트 `ats.generic.{grade,tier,cases}` — `tools/run_generic.sh <theme>` 이 쓴다. UI 티어 뱃지는 여기서 읽는다.
 
 이 등급이 나오기 전엔 A 가 2종뿐이었다 — 원인은 라벨 자간(R4'')이었고, 편향된 검사기가 그걸 통과시키고 있었다.

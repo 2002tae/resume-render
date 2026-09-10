@@ -102,6 +102,7 @@ def grade(results, expect):
 
 def main():
     ap = argparse.ArgumentParser(); ap.add_argument("pdfs", nargs="+"); ap.add_argument("--json"); ap.add_argument("--expect")
+    ap.add_argument("--theme", help="이 테마의 매니페스트 ats.generic 에 결과를 누적 기록")
     a = ap.parse_args()
     expect = json.loads(a.expect) if a.expect else dict(name="Taemin Kang", contacts=5, sections=["experience","education","projects","research","skills","honors"], exp_entries=2)
     report = {}
@@ -111,6 +112,16 @@ def main():
         report[pathlib.Path(pdf).stem] = dict(grade=g, notes=notes, engines=res)
         print(f"{pathlib.Path(pdf).stem:40s} {g}   " + (" | ".join(notes[:3]) if notes else "clean"))
     if a.json: pathlib.Path(a.json).write_text(json.dumps(report, indent=1, ensure_ascii=False))
+    if a.theme:
+        mp = ROOT/"themes"/a.theme/"manifest.json"; m = json.loads(mp.read_text())
+        g = m.setdefault("ats", {}).setdefault("generic", {"cases": {}})
+        for k, v in report.items(): g["cases"][k] = v["grade"]
+        order = {"A": 0, "B": 1, "C": 2, "D": 3}
+        worst = max(g["cases"].values(), key=lambda x: order[x])
+        g["grade"] = worst
+        g["tier"] = "ats-safe" if worst == "A" else ("distinctive" if worst in ("B",) else "distinctive-limited")
+        g["method"] = "tools/ats_generic.py — structure-blind heading lexicon over poppler/pdfminer/pypdf, base + 4 mutations (tools/mutate.py)"
+        mp.write_text(json.dumps(m, indent=2) + "\n")
 
 if __name__ == "__main__":
     main()

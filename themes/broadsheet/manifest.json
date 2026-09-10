@@ -64,7 +64,19 @@
       "pdftotext"
     ],
     "checkedAt": "2026-09-10",
-    "note": "Text-layer integrity, not a vendor guarantee. See docs/template-contract.md \u00a75."
+    "note": "Text-layer integrity, not a vendor guarantee. See docs/template-contract.md \u00a75.",
+    "generic": {
+      "cases": {
+        "base": "B",
+        "short-name": "B",
+        "no-research-honors": "B",
+        "one-job-no-summary": "B",
+        "flat-skills": "B"
+      },
+      "grade": "B",
+      "tier": "distinctive",
+      "method": "tools/ats_generic.py \u2014 structure-blind heading lexicon over poppler/pdfminer/pypdf, base + 4 mutations (tools/mutate.py)"
+    }
   },
   "limits": {
     "nameMaxChars": 16,
