@@ -2,7 +2,8 @@
    fitz.Story 의 CSS 지원 범위가 불확실하므로(이 환경엔 PyMuPDF 없음) 가장 보수적으로 쓴다:
    블록·인라인·마진·폰트·색·네이티브 리스트만. flex/grid/커스텀 프로퍼티/의사요소 **없음**.
    구분자가 필요한 자리는 여백으로 대신한다. Artemis 의 fitz 프로브가 이 파일의 유일한 검증이다. */
-.rz{padding:48px 54px;background:#fff;color:#111;font-family:Helvetica,Arial,sans-serif;font-size:10.5px;line-height:1.35}
+.rz{padding:48px 54px;background:#fff;color:#111;font-family:Helvetica,Arial,sans-serif;font-size:10.5px;line-height:1.35;
+  font-variant-ligatures:none}   /* fi → U+FB01 로 추출되는 것 방지 (fitz 가 존중하는지 프로브 필요) */
 .rz-basics{margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid #111}
 .rz-name{margin:0 0 3px;font-size:22px;font-weight:700}
 .rz-headline{margin:0 0 3px;color:#444}

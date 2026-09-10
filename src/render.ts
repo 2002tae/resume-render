@@ -93,7 +93,9 @@ export function render(ir: ResumeIR, opts: RenderOptions = {}): RenderResult {
     const d = dates ? `<span class="rz-dates" data-raw="${esc(dates)}">${esc(dates)}</span>` : "";
     // orgFirst 는 org·dates·title 순: 날짜가 org 와 같은 줄 흐름에 있어야 pdfminer 류가 떼어내지 않는다(실측)
     const parts = allowOrgFirst && opts.layout?.orgFirst && o ? [o, d, t] : [t, ...(o ? [o] : []), d];
-    return `<div class="rz-entry-head">${parts.join("")}</div>`;
+    // 인접 span 사이 공백: 단어 경계는 마크업이 싣는다. margin 만으로 벌리면 margin 을 무시하는 조판기(fitz)에서
+    // "AnalystKorea Defense" 로 붙는다(Artemis 실측). flex/grid 헤드는 공백 텍스트 노드를 렌더하지 않아 시각 무영향.
+    return `<div class="rz-entry-head">${parts.filter(Boolean).join(" ")}</div>`;
   };
 
   const section = (key: SectionKey, inner: string): string =>
@@ -105,7 +107,7 @@ export function render(ir: ResumeIR, opts: RenderOptions = {}): RenderResult {
   const b = ir.basics ?? {};
   if (!b.name) warn("MISSING_NAME", "basics.name is missing; header name omitted", "basics.name");
   const contacts = (b.contacts ?? []).map(asContact)
-    .map((c) => `<li class="rz-contact" data-kind="${esc(c.kind)}">${esc(c.value)}</li>`).join("");
+    .map((c) => `<li class="rz-contact" data-kind="${esc(c.kind)}">${esc(c.value)}</li>`).join(" ");
   const summaryInHeader = !!opts.layout?.summaryInHeader && !!ir.summary?.text && order.includes("summary");
   const header =
     `<header class="rz-basics">` +
@@ -142,7 +144,7 @@ export function render(ir: ResumeIR, opts: RenderOptions = {}): RenderResult {
           return `<div class="rz-entry">` +
             headHtml(ed.school, ed.location, dateRaw(ed.dates)) +
             (sub ? `<p class="rz-sub">${esc(sub)}</p>` : "") +
-            (ed.coursework?.length ? `<p class="rz-coursework"><span class="rz-kicker">Coursework</span>${esc(ed.coursework.join(" · "))}</p>` : "") +
+            (ed.coursework?.length ? `<p class="rz-coursework"><span class="rz-kicker">Coursework</span> ${esc(ed.coursework.join(" · "))}</p>` : "") +
             bulletsHtml(bs, `education[${i}]`) + `</div>`;
         }).join("");
         out.push(section(key, inner));
@@ -193,9 +195,9 @@ export function render(ir: ResumeIR, opts: RenderOptions = {}): RenderResult {
           ? [{ items: raw as string[] }] : (raw as SkillGroup[]);
         // 스킬은 하나의 그리드로: 라벨 열이 가장 긴 라벨 폭으로 정렬된다 (docs/page-policy-contract.md §7)
         const inner = groups.map((g) =>
-          `<span class="rz-kicker">${g.label ? esc(g.label) : ""}</span>` +
+          `<span class="rz-kicker">${g.label ? esc(g.label) : ""}</span> ` +
           `<span class="rz-skill-items">${esc(g.items.join(" · "))}</span>`
-        ).join("");
+        ).join(" ");
         out.push(`<section class="rz-section" data-section="skills">` +
           `<h2 class="rz-section-label">${esc(labels.skills)}</h2>` +
           `<div class="rz-entries rz-skills${opts.layout?.skillsGrid ? " rz-skills--grid" : ""}">${inner}</div></section>`);

@@ -31,6 +31,9 @@ def main():
     ir = json.loads((ROOT / "fixtures/dense.json").read_text())
     params = json.loads((ROOT / "tools/visual-ref/params.json").read_text()) if (REF / "params.json").exists() else {}
     themes = sorted(d.name for d in (ROOT / "themes").iterdir() if d.is_dir())
+    import weasyprint
+    if not update and params.get("_weasyprint") and params["_weasyprint"] != weasyprint.__version__:
+        print(f"  ! baseline was made with WeasyPrint {params['_weasyprint']}, this is {weasyprint.__version__} — line-height rounding differs between versions; expect drift. Re-baseline with --update after confirming visually.")
     if only: themes = [t for t in themes if t in only]
     REF.mkdir(exist_ok=True)
     fails = 0
@@ -52,6 +55,7 @@ def main():
             fails += 1
             diff.save(REF / f"{t}.diff.png")
         print(f"  {t:12s} {'ok  ' if ok else 'FAIL'} changed={changed:5.2f}%  {'' if ok else '→ ' + str(REF / f'{t}.diff.png')}")
+    import weasyprint as _w; params["_weasyprint"] = _w.__version__
     (REF / "params.json").write_text(json.dumps(params, indent=1))
     print("PASS" if not fails else f"FAIL — {fails} theme(s) changed beyond {THRESH}%")
     sys.exit(1 if fails else 0)

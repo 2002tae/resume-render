@@ -35,8 +35,16 @@
     "skillLabelChars": 18
   },
   "fitz": {
-    "verified": false,
-    "note": "PyMuPDF \ubbf8\uc124\uce58 \ud658\uacbd\uc5d0\uc11c \uc791\uc131 \u2014 Artemis \uc5d0\uc11c \uccab fitz.Story \ub80c\ub354 \uc2dc \uac80\uc99d\ud560 \uac83. --density \ub294 fitz \uac00 \ucee4\uc2a4\ud140 \ud504\ub85c\ud37c\ud2f0\ub97c \ubaa8\ub974\ubbc0\ub85c \uc774 \ud14c\ub9c8\uc5d0\uc120 \uace0\uc815\uac12\uc774\uba70, fit \uc740 filter.minPriority \ub9cc \uc4f4\ub2e4."
+    "verified": true,
+    "verifiedBy": "Artemis PR-5 probe (fitz.Story / PyMuPDF): Nimbus Sans Regular/Bold embedded+unicode, text readback OK",
+    "caveats": [
+      "fitz ignores inline margin \u2014 word boundaries must come from markup (render() now emits a space between adjacent inline elements)",
+      "fitz ignores text-transform:uppercase \u2014 section labels render as written (Summary, not SUMMARY). ATS-neutral.",
+      "fitz drops the hyphen when breaking a line at a hyphen (cross-source \u2192 crosssource). Keyword risk; not fixable from CSS without changing text.",
+      "fitz emits the fi ligature as U+FB01 \u2014 plain sets font-variant-ligatures:none; verify fitz honors it",
+      "--density is a custom property fitz does not read; fit on this path uses filter.minPriority / top-N only"
+    ],
+    "note": "plain's tier-A claim (docs/template-contract.md \u00a715) was measured on browser/WeasyPrint output. On the fitz path it holds minus the hyphen-break caveat."
   },
   "ats": {
     "verified": true,
@@ -53,7 +61,7 @@
       "pdftotext -layout",
       "pdftotext"
     ],
-    "checkedAt": "2026-09-09",
+    "checkedAt": "2026-09-10",
     "note": "Text-layer integrity, not a vendor guarantee. See docs/template-contract.md \u00a75."
   },
   "note_baseBodyPx": "\ubcf8\ubb38 --fs \uc758 density=1 \uae30\uc900 px. bodyPt = baseBodyPx \u00d7 density \u00d7 bodyScale \u00d7 0.75 (\uc2e4\uce21: 12px \u2192 9.0pt)",

@@ -11,5 +11,6 @@
  "standfirst": 0.876,
  "broadsheet": 0.978,
  "spread": 0.91,
- "plain": 1.0
+ "plain": 1.0,
+ "_weasyprint": "70.0"
 }
