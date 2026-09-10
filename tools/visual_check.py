@@ -55,7 +55,8 @@ def main():
             fails += 1
             diff.save(REF / f"{t}.diff.png")
         print(f"  {t:12s} {'ok  ' if ok else 'FAIL'} changed={changed:5.2f}%  {'' if ok else '→ ' + str(REF / f'{t}.diff.png')}")
-    import weasyprint as _w; params["_weasyprint"] = _w.__version__
+    if update:
+        import weasyprint as _w; params["_weasyprint"] = _w.__version__   # 기준선을 만든 버전만 기록 — 검사 때 덮어쓰면 가드가 자기를 끈다(Artemis 지적)
     (REF / "params.json").write_text(json.dumps(params, indent=1))
     print("PASS" if not fails else f"FAIL — {fails} theme(s) changed beyond {THRESH}%")
     sys.exit(1 if fails else 0)

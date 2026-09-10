@@ -64,7 +64,6 @@
       "pdftotext -layout",
       "pdftotext"
     ],
-    "checkedAt": "2026-09-10",
     "note": "Text-layer integrity, not a vendor guarantee. See docs/template-contract.md \u00a75.",
     "generic": {
       "cases": {
@@ -77,6 +76,10 @@
       "grade": "A",
       "tier": "ats-safe",
       "method": "tools/ats_generic.py \u2014 structure-blind heading lexicon over poppler/pdfminer/pypdf, base + 4 mutations (tools/mutate.py)"
+    },
+    "checkedWith": {
+      "weasyprint": "70.0",
+      "poppler": "24.02.0"
     }
   },
   "baseBodyPx": 10.6,

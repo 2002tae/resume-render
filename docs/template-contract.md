@@ -415,6 +415,7 @@ POST /resume-tailor/render
 | W12 | `break-inside:avoid` 엔트리가 페이지 경계에 걸리면 통째로 소실 | 불릿 단위로만 보호 |
 | W13 | flex 컬럼 아이템이 grid 자손을 품으면 ~1줄 유령 높이 (가장 가까운 flex 조상 아이템에 붙음) | grid 헤드를 쓰는 테마는 섹션·엔트리를 `block` |
 | W14 | (추출기) pdfminer 가 세로로 가까운 **우측 정렬 날짜**들을 한 텍스트 박스로 묶어 다른 위치에 뱉는다 | 우측 정렬 날짜 디자인의 고유 리스크. ATS 최대 안전은 인라인 날짜(`plain`) |
+| W15 | (추출기) poppler `pdftotext` 기본 모드가 줄 끝 하이픈을 지우며 줄을 잇는다(`state-` / `of-the-art` → `stateof-the-art`). 하이픈은 PDF 안에 있다. Chrome·WeasyPrint·fitz 모두 동일 — 어느 단어가 걸리느냐만 다르다 (Artemis 실측) | 엔진 문제가 아니다. `ats_check` 의 `hyphenBreaks` 경고가 이것. 키워드 매칭이 중요하면 `-layout` 또는 pdfminer 를 쓰는 리더가 유리 |
 
 ## §11. 린트 규칙 추가분
 

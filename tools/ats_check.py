@@ -145,7 +145,6 @@ def main():
                           f"{'ok' if not r['labelsLost'] else 'LOST':>6s} {r['contacts']:>8s}  {'FAIL' if bad else ''}")
     print(f"\n{'FAIL' if fails else 'PASS'} — {fails} hard failure(s). (expressive 테마의 순서 흐트러짐은 '~' 로 표시, 실패 아님)")
     if write:
-        import datetime
         for t, a in agg.items():
             mp = ROOT/"themes"/t/"manifest.json"; m = json.loads(mp.read_text())
             order = ("all" if a["orderLayout"] and a["orderStream"]
@@ -156,7 +155,8 @@ def main():
                 "orderPreserved": order,
                 "interleaveWarnings": a["interleave"],
                 "fixtures": fixtures, "extractors": ["pdftotext -layout", "pdftotext"],
-                "checkedAt": datetime.date.today().isoformat(),
+                "checkedWith": {"weasyprint": __import__("weasyprint").__version__,
+                                "poppler": subprocess.run(["pdftotext","-v"],capture_output=True,text=True).stderr.split("\n")[0].split()[-1]},
                 "note": "Text-layer integrity, not a vendor guarantee. See docs/template-contract.md §5.",
             }
             mp.write_text(json.dumps(m, indent=2) + "\n")

@@ -38,13 +38,12 @@
     "verified": true,
     "verifiedBy": "Artemis PR-5 probe (fitz.Story / PyMuPDF): Nimbus Sans Regular/Bold embedded+unicode, text readback OK",
     "caveats": [
-      "fitz ignores inline margin \u2014 word boundaries must come from markup (render() now emits a space between adjacent inline elements)",
-      "fitz ignores text-transform:uppercase \u2014 section labels render as written (Summary, not SUMMARY). ATS-neutral.",
-      "fitz drops the hyphen when breaking a line at a hyphen (cross-source \u2192 crosssource). Keyword risk; not fixable from CSS without changing text.",
-      "fitz emits the fi ligature as U+FB01 \u2014 plain sets font-variant-ligatures:none; verify fitz honors it",
+      "fitz ignores inline margin \u2014 word boundaries must come from markup (render() emits a space between adjacent inline elements)",
+      "fitz ignores text-transform:uppercase \u2014 section labels render as written. ATS-neutral.",
+      "fitz does NOT honor font-variant-ligatures:none \u2014 fi/fl/ffi/ffl extract as U+FB01\u2013FB04 (Artemis probe: identical with and without the rule; Chrome makes no ligatures, so this is fitz-only). No CSS mitigation; normalize downstream if keyword matching needs it.",
       "--density is a custom property fitz does not read; fit on this path uses filter.minPriority / top-N only"
     ],
-    "note": "plain's tier-A claim (docs/template-contract.md \u00a715) was measured on browser/WeasyPrint output. On the fitz path it holds minus the hyphen-break caveat."
+    "note": "plain's tier-A claim (docs/template-contract.md \u00a715) holds on the fitz path. The earlier 'hyphen drop' caveat was misattributed: hyphens are in the PDF; poppler's default-mode de-hyphenation removes them at line breaks for every engine including Chrome (Artemis probe: fitz+pdftotext 'stateof-the-art' == Chrome+pdftotext). That is a library-wide extractor behavior, tracked as `hyphenBreaks` in ats_check."
   },
   "ats": {
     "verified": true,
@@ -61,20 +60,11 @@
       "pdftotext -layout",
       "pdftotext"
     ],
-    "checkedAt": "2026-09-10",
-    "note": "Text-layer integrity, not a vendor guarantee. See docs/template-contract.md \u00a75.",
-    "generic": {
-      "cases": {
-        "base": "A",
-        "short-name": "A",
-        "no-research-honors": "A",
-        "one-job-no-summary": "A",
-        "flat-skills": "A"
-      },
-      "grade": "A",
-      "tier": "ats-safe",
-      "method": "tools/ats_generic.py \u2014 structure-blind heading lexicon over poppler/pdfminer/pypdf, base + 4 mutations (tools/mutate.py)"
-    }
+    "checkedWith": {
+      "weasyprint": "70.0",
+      "poppler": "24.02.0"
+    },
+    "note": "Text-layer integrity, not a vendor guarantee. See docs/template-contract.md \u00a75."
   },
   "note_baseBodyPx": "\ubcf8\ubb38 --fs \uc758 density=1 \uae30\uc900 px. bodyPt = baseBodyPx \u00d7 density \u00d7 bodyScale \u00d7 0.75 (\uc2e4\uce21: 12px \u2192 9.0pt)",
   "capacity": {
