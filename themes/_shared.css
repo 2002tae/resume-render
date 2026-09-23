@@ -7,6 +7,9 @@ html,body{margin:0;padding:0;background:#fff}
 .rz-bullet{break-inside:avoid}
 /* 섹션 제목이 페이지 끝에 고아로 남지 않게 (실제 이력서 렌더에서 관측) */
 .rz-section-label{break-after:avoid}
+/* 머리줄(+연구의 지도교수 줄)이 첫 bullet 과 떨어져 페이지 끝에 남지 않게 */
+.rz-entry-head{break-after:avoid}
+.rz-entry>.rz-sub{break-after:avoid}
 @page{size:letter;margin:0}
 /* 페이지 여백은 @page 가 아니라 .rz 의 padding 으로 만든다.
    design-brief.html 의 .page 에는 padding 이 없으므로, 테마가 넣는 padding 이

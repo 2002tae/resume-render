@@ -21,15 +21,19 @@
   line-height:1.7;color:var(--mid)}
 .rz-contact{display:block}
 
-.rz-section{display:flex;flex-direction:column;gap:var(--sp-item);padding-top:var(--sp-sec);
+.rz-section{display:block;padding-top:var(--sp-sec);
   margin-top:calc(var(--sp-sec) * 1.2)}
+/* W7: flex 컨테이너 안에서는 break-after:avoid 가 무시되어 2페이지에서 섹션 제목만 1쪽 끝에 남았다(실측) — block + 같은 값의 margin */
+.rz-section>.rz-section-label{margin-bottom:var(--sp-item)}
 .rz-section-label{counter-increment:sec;margin:0;display:flex;align-items:baseline;gap:10px;
   font-family:'Space Grotesk',Arial,sans-serif;font-size:var(--fs-sec);font-weight:500;letter-spacing:var(--tr-sec);text-transform:uppercase;
   padding-bottom:3px;border-bottom:var(--rw) solid var(--rule)}
 .rz-section-label::before{content:counter(sec,decimal-leading-zero);
   font-family:'Instrument Serif',Georgia,serif;font-size:calc(var(--fs-sec) * 1.7);
   font-weight:400;letter-spacing:0;color:var(--accent)}
-.rz-entries{display:flex;flex-direction:column;gap:var(--sp-item)}
+.rz-entries{display:block}
+.rz-entries>.rz-entry{margin-bottom:var(--sp-item)}
+.rz-entries>.rz-entry:last-child{margin-bottom:0}
 
 .rz-entry-head{display:flex;flex-wrap:wrap;align-items:baseline;column-gap:8px}
 /* 원본 핵심: 디스플레이 세리프 제목 vs 그로테스크 본문 (전사) */

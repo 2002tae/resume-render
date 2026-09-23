@@ -19,11 +19,15 @@
 .rz-contact{display:inline}
 .rz-contact:not(:last-child)::after{content:"  ·  ";color:var(--faint)}
 
-.rz-section{display:flex;flex-direction:column;gap:var(--sp-item);padding-top:var(--sp-sec)}
+.rz-section{display:block;padding-top:var(--sp-sec)}
+/* W7: flex 컨테이너 안에서는 break-after:avoid 가 무시되어 2페이지에서 섹션 제목만 1쪽 끝에 남았다(실측) — block + 같은 값의 margin */
+.rz-section>.rz-section-label{margin-bottom:var(--sp-item)}
 .rz-section-label{margin:0;font-size:var(--fs-sec);font-variant:all-small-caps;font-weight:700;
   letter-spacing:var(--tr-sec);color:var(--ink);
   padding-bottom:2px;border-bottom:var(--rw) solid var(--rule)}
-.rz-entries{display:flex;flex-direction:column;gap:var(--sp-item)}
+.rz-entries{display:block}
+.rz-entries>.rz-entry{margin-bottom:var(--sp-item)}
+.rz-entries>.rz-entry:last-child{margin-bottom:0}
 
 /* 원본은 justify-content:space-between 이지만 그건 제목+소속이 한 래퍼에 있을 때의 선언이다.
    정규 HTML 은 셋이 평면이라 그대로 쓰면 소속이 가운데로 뜬다 — 시각 결과를 맞춘다. */

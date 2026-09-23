@@ -129,6 +129,31 @@ export async function plan(ir: ResumeIR, assets: ThemeAssets, policy: FitPolicy,
   // floor by policy: don't go below minBodyPt
   const floor = lock ? FLOOR : Math.max(FLOOR, minBodyPt / (bodyPx * 0.75));
 
+  // body-lock fill: 본문이 고정이면 density 는 여백만 바꾸므로 "많이 넣기"가 항상 낫다. priority 티어는
+  // 들어가는 순간 멈춰 남은 공간을 버린다(실측 11 → 6) — FLOOR 에서 최대 N 을 찾고 그 N 에서 여백을 되돌린다.
+  // tools/fit.py 의 body-lock 분기와 같은 알고리즘.
+  if (lock) {
+    const total = (["experiences", "projects", "research"] as const).reduce((n, k) => n + (ir[k] ?? []).reduce((m, x) => m + (x.bullets ?? []).length, 0), 0);
+    let lo = 0, hi = total + 1;
+    while (hi - lo > 1) {
+      const mid = (lo + hi) >> 1;
+      if ((await pagesAt(floor, undefined, keepTop(ir, mid).ir)) <= target) lo = mid; else hi = mid;
+    }
+    if (lo === 0 && total > 0) {
+      options.push({ kind: "infeasible", reason: `does not fit at ${minBodyPt}pt even with no bullets` });
+      return { feasible: false, needsChoice: false, atOriginal, options, warnings };
+    }
+    const { ir: kept, removed } = keepTop(ir, lo);
+    let dlo = floor, dhi = 1;
+    if ((await pagesAt(1, undefined, kept)) <= target) dlo = 1;
+    else for (let i = 0; i < 5; i++) { const m = (dlo + dhi) / 2; if ((await pagesAt(m, undefined, kept)) <= target) dlo = m; else dhi = m; }
+    if (removed.length) options.push({ kind: "trim", remove: removed, density: dlo, bodyPt: pt(dlo), pages: target });
+    else options.push({ kind: "shrink", density: dlo, bodyPt: pt(dlo), pages: target });
+    options.push({ kind: "overflow", pages: p0, bodyPt: pt(1) });
+    return { feasible: true, needsChoice: removed.length > 0 && policy.trim === "ask", atOriginal,
+             best: { density: dlo, bodyPt: pt(dlo), pages: target, removed }, options, warnings };
+  }
+
   const search = async (minPriority?: number) => {
     if ((await pagesAt(floor, minPriority)) > target) return null;
     let lo = floor, hi = 1;

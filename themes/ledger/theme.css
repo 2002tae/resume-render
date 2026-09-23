@@ -25,15 +25,19 @@
   font-size:var(--fs-meta);line-height:1.7;color:var(--mid)}
 
 /* 번호 매긴 섹션 */
-.rz-section{display:flex;flex-direction:column;gap:var(--sp-item);
+.rz-section{display:block;
   padding-top:var(--sp-sec);margin-top:var(--sp-sec);
   border-top:var(--rw) solid var(--rule);counter-reset:ent}
+/* W7: flex 컨테이너 안에서는 break-after:avoid 가 무시되어 2페이지에서 섹션 제목만 1쪽 끝에 남았다(실측) — block + 같은 값의 margin */
+.rz-section>.rz-section-label{margin-bottom:var(--sp-item)}
 /* 원본(캡처 재확인): 번호·라벨 모두 모노 대문자, accent 색 */
 .rz-section-label{counter-increment:sec;margin:0;display:flex;align-items:baseline;gap:11px;
   font-family:var(--mono);font-size:var(--fs-sec);font-weight:500;letter-spacing:var(--tr-mono);
   text-transform:uppercase;color:var(--accent)}
 .rz-section-label::before{content:counter(sec,decimal-leading-zero);color:var(--accent)}
-.rz-entries{display:flex;flex-direction:column;gap:var(--sp-item)}
+.rz-entries{display:block}
+.rz-entries>.rz-entry{margin-bottom:var(--sp-item)}
+.rz-entries>.rz-entry:last-child{margin-bottom:0}
 
 /* 점선 리더로 제목과 날짜를 잇는다 */
 .rz-entry-head{display:flex;align-items:baseline;flex-wrap:wrap;column-gap:7px}

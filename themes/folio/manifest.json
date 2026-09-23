@@ -62,23 +62,11 @@
       "pdftotext -layout",
       "pdftotext"
     ],
-    "note": "Text-layer integrity, not a vendor guarantee. See docs/template-contract.md \u00a75.",
-    "generic": {
-      "cases": {
-        "base": "A",
-        "short-name": "A",
-        "no-research-honors": "A",
-        "one-job-no-summary": "A",
-        "flat-skills": "A"
-      },
-      "grade": "A",
-      "tier": "ats-safe",
-      "method": "tools/ats_generic.py \u2014 structure-blind heading lexicon over poppler/pdfminer/pypdf, base + 4 mutations (tools/mutate.py)"
-    },
     "checkedWith": {
       "weasyprint": "70.0",
       "poppler": "24.02.0"
-    }
+    },
+    "note": "Text-layer integrity, not a vendor guarantee. See docs/template-contract.md \u00a75."
   },
   "baseBodyPx": 10.6,
   "note_baseBodyPx": "\ubcf8\ubb38 --fs \uc758 density=1 \uae30\uc900 px. bodyPt = baseBodyPx \u00d7 density \u00d7 bodyScale \u00d7 0.75 (\uc2e4\uce21: 12px \u2192 9.0pt)",

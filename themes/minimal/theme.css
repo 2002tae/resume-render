@@ -18,11 +18,15 @@
 .rz-contacts{margin:10px 0 0;font-size:var(--fs-meta);color:var(--mid);
   display:flex;flex-wrap:wrap;column-gap:14px;row-gap:2px}
 
-.rz-section{display:flex;flex-direction:column;gap:var(--sp-item);
+.rz-section{display:block;
   padding-top:calc(var(--sp-sec) * 1.6)}
+/* W7: flex 컨테이너 안에서는 break-after:avoid 가 무시되어 2페이지에서 섹션 제목만 1쪽 끝에 남았다(실측) — block + 같은 값의 margin */
+.rz-section>.rz-section-label{margin-bottom:var(--sp-item)}
 .rz-section-label{margin:0;font-size:var(--fs-sec);font-weight:700;letter-spacing:var(--tr-sec);
   text-transform:uppercase;color:var(--mid)}
-.rz-entries{display:flex;flex-direction:column;gap:var(--sp-item)}
+.rz-entries{display:block}
+.rz-entries>.rz-entry{margin-bottom:var(--sp-item)}
+.rz-entries>.rz-entry:last-child{margin-bottom:0}
 
 .rz-entry-head{display:flex;flex-wrap:wrap;align-items:baseline;column-gap:8px}
 .rz-title{font-size:var(--fs-entry);font-weight:700}

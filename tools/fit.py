@@ -84,6 +84,32 @@ def fit(ir, theme, target, out, log, min_body_pt=None):
     else:
         BODY_LOCK = None; floor = FLOOR; top = 1.0
         pt = lambda d: round(base * d * PX2PT, 1)
+    if min_body_pt:
+        # 본문 고정 모드에서는 density 가 여백·간격만 바꾼다 — 글자 크기는 그대로이므로 "많이 넣기"가 항상 낫다.
+        # priority 티어는 들어가는 순간 멈춰 남은 공간을 버린다(실측: 11개 들어갈 자리에 6개). 그래서 여기서는
+        # 가장 조밀한 여백(FLOOR)에서 들어가는 최대 N 을 찾고, 그 N 에서 여백을 최대한 되돌린다.
+        from capacity import keep_top
+        total = sum(len(x.get("bullets", [])) for s_ in ("experiences","projects","research") for x in ir.get(s_, []))
+        lo, hi = 0, total + 1
+        while hi - lo > 1:
+            mid = (lo + hi) // 2
+            if try_render(keep_top(ir, mid), theme, floor, None, out)[0] <= target: lo = mid
+            else: hi = mid
+        if lo == 0 and total:
+            p, w = try_render(keep_top(ir, 0), theme, floor, None, out)
+            return dict(density=round(floor,3), minPriority=None, topN=0, pages=p, fitted=False, bodyPt=pt(floor), warnings=w + [
+                {"code":"FIT_FAILED","message":f"still {p} pages at density {floor:.3f} with no bullets"}])
+        kept = keep_top(ir, lo)
+        d_lo, d_hi = floor, 1.0
+        if try_render(kept, theme, 1.0, None, out)[0] <= target: d_lo = 1.0
+        else:
+            for _ in range(STEPS):
+                m = (d_lo + d_hi) / 2
+                if try_render(kept, theme, m, None, out)[0] <= target: d_lo = m
+                else: d_hi = m
+        p, w = try_render(kept, theme, d_lo, None, out)
+        log(f"  body-lock: top-{lo}/{total}  density={d_lo:.3f} → {p}p  ✓")
+        return dict(density=round(d_lo,3), minPriority=None, topN=(lo if lo < total else None), pages=p, fitted=True, bodyPt=pt(d_lo), warnings=w)
     trimmed = 0
     for min_priority in (None, 5, 4, 3, 2, 1):
         # density 이분탐색: lo 는 들어감(있으면), hi 는 안 들어감

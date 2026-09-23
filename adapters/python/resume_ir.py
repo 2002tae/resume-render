@@ -68,8 +68,23 @@ def _loose_bullets(v):
     if not v: return v
     return [ {"text": b} if isinstance(b, str) else b for b in v ]
 
+_MONTHS = ["jan","feb","mar","apr","may","jun","jul","aug","sep","oct","nov","dec"]
+_MON = r"(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Sept|Oct|Nov|Dec)[a-z]*\.?"
+import re as _re
+_ABBREV = _re.compile(rf"^\s*({_MON})\s*[–—-]\s*({_MON})\s+(\d{{4}})\s*$", _re.I)
+
+def expand_date_range(raw: str) -> str:
+    """render.ts expandDateRange 와 같은 규칙: "May – Jul 2026" → "May 2026 – Jul 2026"."""
+    m = _ABBREV.match(raw)
+    if not m: return raw
+    idx = lambda x: _MONTHS.index(x[:3].lower())
+    y = int(m.group(3)); start = y - 1 if idx(m.group(1)) > idx(m.group(2)) else y
+    return f"{m.group(1)} {start} – {m.group(2)} {y}"
+
 def _loose_dates(v):
-    return {"raw": v} if isinstance(v, str) else v
+    if isinstance(v, str): return {"raw": expand_date_range(v)}
+    if isinstance(v, dict) and isinstance(v.get("raw"), str): return {**v, "raw": expand_date_range(v["raw"])}
+    return v
 
 Status = Literal["ongoing","completed","incoming","accepted","deferred"]
 

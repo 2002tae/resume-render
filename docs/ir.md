@@ -517,3 +517,10 @@ layout?: {
 ```
 `orgFirst` 는 DOM 순서 자체를 바꾸므로 추출 순서도 같이 바뀐다 — CSS `order` 와 달리 읽기 순서와 시각 순서가 일치한다.
 education·projects 에는 적용하지 않는다(org 슬롯이 각각 위치·역할이라 뜻이 깨짐).
+
+
+## §11. 날짜 풀어쓰기 (render · Pydantic 공통)
+
+`dates.raw` 는 그대로 렌더하되 한 가지 예외: 앞쪽 연도가 생략된 월–월 범위(`May – Jul 2026`)는 `May 2026 – Jul 2026` 으로 푼다.
+ATS 날짜 파서가 시작 연도를 못 읽기 때문이다. 해를 넘는 범위(`Dec – Feb 2026`)는 시작 연도를 하나 뺀다. 연도가 아예 없는 것(`May – Present`)은 추측하지 않는다.
+TS `expandDateRange()` (export) 와 Python `expand_date_range()` 가 같은 규칙이고, Pydantic 은 저장 시점에 푼다.

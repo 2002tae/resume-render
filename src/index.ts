@@ -1,2 +1,2 @@
-export { render } from "./render.js";
+export { render, expandDateRange } from "./render.js";
 export type * from "./ir.js";

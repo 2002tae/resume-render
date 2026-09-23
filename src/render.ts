@@ -42,8 +42,26 @@ const safeVars = (vars: Record<string, string> | undefined, warn: (c: Warning["c
 const inline = (s: string): string =>
   esc(s).replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>");
 
+const MONTHS = ["jan","feb","mar","apr","may","jun","jul","aug","sep","oct","nov","dec"];
+const MON = "(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Sept|Oct|Nov|Dec)[a-z]*\\.?";
+const ABBREV_RANGE = new RegExp(`^\\s*(${MON})\\s*[–—-]\\s*(${MON})\\s+(\\d{4})\\s*$`, "i");
+
+/**
+ * "May – Jul 2026" → "May 2026 – Jul 2026". ATS 날짜 파서는 시작 쪽 연도가 없으면 시작일을 못 읽는다
+ * (구조 무지 파서 tools/ats_generic.py 의 범위 정규식이 이걸 못 잡았다). 월–월 범위만 풀고,
+ * 해를 넘는 범위("Dec – Feb 2026")는 시작 연도를 하나 뺀다. 연도가 아예 없는 것("May – Present")은 추측하지 않는다.
+ */
+export function expandDateRange(raw: string): string {
+  const m = raw.match(ABBREV_RANGE);
+  if (!m) return raw;
+  const idx = (x: string) => MONTHS.indexOf(x.slice(0, 3).toLowerCase());
+  const y = Number(m[3]);
+  const startYear = idx(m[1]) > idx(m[2]) ? y - 1 : y;
+  return `${m[1]} ${startYear} – ${m[2]} ${y}`;
+}
+
 const dateRaw = (d?: DateRange | string): string =>
-  typeof d === "string" ? d : d?.raw ?? "";
+  expandDateRange(typeof d === "string" ? d : d?.raw ?? "");
 
 const asBullet = (b: LooseBullet): Bullet => (typeof b === "string" ? { text: b } : b);
 

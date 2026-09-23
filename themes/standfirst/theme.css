@@ -33,10 +33,14 @@
   line-height:1.42;color:var(--ink)}
 
 /* 섹션 제목: 우측 끝 이탤릭, 아래 가는 룰 */
-.rz-section{display:flex;flex-direction:column;gap:var(--sp-item);padding-top:var(--sp-sec)}
+.rz-section{display:block;padding-top:var(--sp-sec)}
+/* W7: flex 컨테이너 안에서는 break-after:avoid 가 무시되어 2페이지에서 섹션 제목만 1쪽 끝에 남았다(실측) — block + 같은 값의 margin */
+.rz-section>.rz-section-label{margin-bottom:var(--sp-item)}
 .rz-section-label{margin:0;font-family:'Newsreader','Source Serif 4',Georgia,serif;font-style:italic;font-size:var(--fs-sec);
   font-weight:400;color:var(--accent);text-align:right;padding-bottom:3px;border-bottom:var(--rw) solid var(--rule)}
-.rz-entries{display:flex;flex-direction:column;gap:var(--sp-item)}
+.rz-entries{display:block}
+.rz-entries>.rz-entry{margin-bottom:var(--sp-item)}
+.rz-entries>.rz-entry:last-child{margin-bottom:0}
 
 .rz-entry-head{display:flex;flex-wrap:wrap;align-items:baseline;column-gap:8px}
 .rz-title{font-size:var(--fs-entry);font-weight:600}

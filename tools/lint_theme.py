@@ -102,6 +102,8 @@ def lint(path):
                 err("R6-ABSOLUTE", "콘텐츠 블록의 absolute 배치는 읽기 순서를 깨뜨린다", sel)
 
         # ── R10: 불릿 마커가 텍스트 글리프면 stream 추출에서 줄바꿈 지점에 삽입된다(실측)
+        if sel.strip() in (".rz-section", ".rz-entries") and ds.get("display", "").strip().startswith("flex"):
+            err("R11-FLEX-LIST", "섹션·엔트리 목록이 flex 면 WeasyPrint 가 break-after:avoid 를 무시해 2페이지에서 섹션 제목이 페이지 끝에 홀로 남고, 줄바꿈되는 머리줄 아래 유령 틈이 생긴다(실측). block + 같은 값의 margin 으로", sel)
         if ".rz-bullet::before" in sel or ".rz-bullet::after" in sel:
             c = ds.get("content", "").strip().strip('"').strip("'")
             # 실측 결함은 절대배치 마커(top 오프셋)가 다른 줄에 걸려 삽입된 것. 인라인 흐름 글리프는

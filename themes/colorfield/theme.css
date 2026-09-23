@@ -34,11 +34,15 @@
   font-size:var(--fs-lede);line-height:1.4;color:var(--on-field)}
 
 /* 본문 */
-.rz-section{display:flex;flex-direction:column;gap:var(--sp-item);
+.rz-section{display:block;
   padding:var(--sp-sec) calc(48px * var(--density)) 0}
+/* W7: flex 컨테이너 안에서는 break-after:avoid 가 무시되어 2페이지에서 섹션 제목만 1쪽 끝에 남았다(실측) — block + 같은 값의 margin */
+.rz-section>.rz-section-label{margin-bottom:var(--sp-item)}
 .rz-section-label{margin:0;font-family:'EB Garamond',Georgia,serif;font-size:var(--fs-sec);
   font-weight:500;letter-spacing:0.08em;text-transform:uppercase;color:var(--accent)}
-.rz-entries{display:flex;flex-direction:column;gap:var(--sp-item)}
+.rz-entries{display:block}
+.rz-entries>.rz-entry{margin-bottom:var(--sp-item)}
+.rz-entries>.rz-entry:last-child{margin-bottom:0}
 .rz-entry-head{display:flex;flex-wrap:wrap;align-items:baseline;column-gap:7px}
 .rz-title{font-family:'Bodoni Moda',Didot,serif;font-size:var(--fs-entry);font-weight:500}
 .rz-org{font-family:'Newsreader','Source Serif 4',Georgia,serif;font-style:italic;color:var(--mid)}
