@@ -40,7 +40,7 @@
 .rz-section>.rz-section-label{margin-bottom:var(--sp-item)}
 .rz-section-label{margin:0;font-size:var(--fs-sec);font-weight:400;letter-spacing:0.08em;
   text-transform:uppercase;color:var(--accent);text-align:center}
-.rz-entries{display:block}
+.rz-entries{display:block;border-top:var(--rw) solid var(--rule);padding-top:var(--sp-item)}
 .rz-entries>.rz-entry{margin-bottom:var(--sp-item)}
 .rz-entries>.rz-entry:last-child{margin-bottom:0}
 .rz-section[data-section="summary"] .rz-entries{border-top:none;padding-top:0}

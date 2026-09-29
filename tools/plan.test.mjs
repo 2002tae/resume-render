@@ -54,3 +54,14 @@ test("a policy WITH minBodyPt still takes the body-lock path (unchanged)", async
   const p = await plan(ir, assetsFor("classic"), { mode: "compact", pages: 1, minBodyPt: 10, trim: "ask" }, measure)
   for (const o of p.options) if ("bodyPt" in o && o.kind !== "overflow") assert.equal(o.bodyPt, 10)
 })
+
+// A résumé with NO bullets that still overflows at the tightest setting (a long skills list): the body-lock path used
+// to skip measuring it — "nothing to trim" — and claim "Fits · 1 page" while the page printed 2-3 pages.
+test("body-lock: no bullets and still over a page at the floor → infeasible, not a fit", async () => {
+  const noBullets = JSON.parse(JSON.stringify(ir))
+  for (const k of ["experiences", "projects", "research"]) for (const e of noBullets[k] ?? []) e.bullets = []
+  const overflowing = async () => PAGE_H * 1.6 // over one page at any density
+  const p = await plan(noBullets, assetsFor("classic"), { mode: "compact", pages: 1, minBodyPt: 10, trim: "ask" }, overflowing)
+  assert.equal(p.feasible, false, JSON.stringify(p.options))
+  assert.ok(p.options.some((o) => o.kind === "infeasible"))
+})

@@ -143,7 +143,9 @@ export async function plan(ir: ResumeIR, assets: ThemeAssets, policy: FitPolicy,
       const mid = (lo + hi) >> 1;
       if ((await pagesAt(floor, undefined, keepTop(ir, mid).ir)) <= target) lo = mid; else hi = mid;
     }
-    if (lo === 0 && total > 0) {
+    // No bullets at all is not "nothing to trim, so it fits": the page was never measured at the tightest setting
+    // (a résumé with no bullets but a long skills list printed 2-3 pages while this said "Fits · 1 page").
+    if (lo === 0 && (total > 0 || (await pagesAt(floor)) > target)) {
       options.push({ kind: "infeasible", reason: `does not fit at ${minBodyPt}pt even with no bullets` });
       return { feasible: false, needsChoice: false, atOriginal, options, warnings };
     }
