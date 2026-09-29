@@ -99,16 +99,19 @@ export async function plan(ir: ResumeIR, assets: ThemeAssets, policy: FitPolicy,
   const size = m.page?.size ?? "letter", orient = m.page?.orientation ?? "portrait";
   const pageH = PAGE_PX[size][orient][1];
   const bodyPx = m.baseBodyPx ?? 11;
-  const lock = policy.mode !== "original" && policy.minBodyPt != null;
-  const pt = (d: number) => lock ? minBodyPt : Math.round(bodyPx * d * 0.75 * 10) / 10;   // 1 CSS px = 0.75 pt, 실측
+  // No default minimum: tools/fit.py floors at FLOOR unless --min-body-pt is given. A phantom 10pt default here put
+  // the non-lock floor above 1 for every theme (base bodies are 7.5-9pt), so an overflowing résumé could never shrink:
+  // `trim: "none"` came back infeasible and `trim: "ask"` trimmed bullets while ENLARGING the page (density > 1).
+  const minBodyPt = policy.minBodyPt;
+  const lock = policy.mode !== "original" && minBodyPt != null;
+  const pt = (d: number) => lock ? minBodyPt! : Math.round(bodyPx * d * 0.75 * 10) / 10;   // 1 CSS px = 0.75 pt, 실측
   const target = policy.pages ?? 1;
-  const minBodyPt = policy.minBodyPt ?? 10;
   const warnings: string[] = [];
 
   // body-lock: minBodyPt 가 있으면 density 는 여백·이름·간격만 줄이고 --body-scale 이 본문을 minBodyPt 에 붙든다.
   // tools/fit.py 의 BODY_LOCK 과 같은 규칙 — 서버와 브라우저가 같은 답을 낸다.
   const pagesAt = async (density: number, minPriority?: number, irX: ResumeIR = ir) => {
-    const vars = lock ? { ...(opts.vars ?? {}), "--body-scale": (minBodyPt / (bodyPx * 0.75 * density)).toFixed(4) } : opts.vars;
+    const vars = lock ? { ...(opts.vars ?? {}), "--body-scale": (minBodyPt! / (bodyPx * 0.75 * density)).toFixed(4) } : opts.vars;
     const o = { ...opts, vars, filter: { ...(opts.filter ?? {}), ...(minPriority ? { minPriority } : {}) } };
     const { html, warnings: w } = buildDocument(irX, assets, o, density);
     for (const x of w) warnings.push(`${x.code}${x.path ? "@" + x.path : ""}`);
@@ -118,7 +121,7 @@ export async function plan(ir: ResumeIR, assets: ThemeAssets, policy: FitPolicy,
 
   const p0 = await pagesAt(1);
   const atOriginal = { pages: p0, bodyPt: pt(1) };
-  if (pt(1) < minBodyPt) warnings.push(`BODY_BELOW_MIN@density1:${pt(1)}pt<${minBodyPt}pt`);
+  if (minBodyPt != null && pt(1) < minBodyPt) warnings.push(`BODY_BELOW_MIN@density1:${pt(1)}pt<${minBodyPt}pt`);
   const options: PlanOption[] = [];
 
   if (policy.mode === "original" || p0 <= target) {
@@ -126,8 +129,9 @@ export async function plan(ir: ResumeIR, assets: ThemeAssets, policy: FitPolicy,
     return { feasible: true, needsChoice: false, atOriginal, best: { density: 1, bodyPt: pt(1), pages: p0, removed: [] }, options, warnings };
   }
 
-  // floor by policy: don't go below minBodyPt
-  const floor = lock ? FLOOR : Math.max(FLOOR, minBodyPt / (bodyPx * 0.75));
+  // The readability floor, both paths — as tools/fit.py. Under body-lock the body is pinned by --body-scale, so the
+  // density floor only tightens margins and spacing.
+  const floor = FLOOR;
 
   // body-lock fill: 본문이 고정이면 density 는 여백만 바꾸므로 "많이 넣기"가 항상 낫다. priority 티어는
   // 들어가는 순간 멈춰 남은 공간을 버린다(실측 11 → 6) — FLOOR 에서 최대 N 을 찾고 그 N 에서 여백을 되돌린다.
@@ -174,7 +178,7 @@ export async function plan(ir: ResumeIR, assets: ThemeAssets, policy: FitPolicy,
   // 2. trim by priority — only if policy allows
   if (policy.trim === "none") {
     options.push({ kind: "overflow", pages: p0, bodyPt: pt(1) });
-    options.push({ kind: "infeasible", reason: `needs < ${minBodyPt}pt body or trimming` });
+    options.push({ kind: "infeasible", reason: `does not fit ${target} page${target === 1 ? "" : "s"} at the minimum density (${pt(FLOOR)}pt body) without trimming` });
     return { feasible: false, needsChoice: false, atOriginal, options, warnings };
   }
   for (const minP of [5, 4, 3, 2, 1]) {

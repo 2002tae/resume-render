@@ -1,7 +1,7 @@
 {
   "name": "resume-render",
   "version": "0.1.0",
-  "description": "IR \u2192 canonical HTML r\u00e9sum\u00e9 renderer. Templates are CSS only. Every theme is ATS-checked.",
+  "description": "IR → canonical HTML résumé renderer. Templates are CSS only. Every theme is ATS-checked.",
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -15,7 +15,8 @@
   "scripts": {
     "build": "tsc -p .",
     "check": "python3 tools/sync_manifests.py && python3 tools/lint_theme.py themes/*/theme.css && python3 tools/visual_check.py && python3 tools/ats_check.py",
-    "prepare": "tsc -p ."
+    "prepare": "tsc -p .",
+    "test": "tsc -p . && node --test tools/"
   },
   "license": "MIT",
   "devDependencies": {
