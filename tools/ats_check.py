@@ -147,6 +147,7 @@ def main():
     if write:
         for t, a in agg.items():
             mp = ROOT/"themes"/t/"manifest.json"; m = json.loads(mp.read_text())
+            prev = m.get("ats") or {}
             order = ("all" if a["orderLayout"] and a["orderStream"]
                      else "stream-only" if a["orderStream"] else "none")
             m["ats"] = {
@@ -159,6 +160,10 @@ def main():
                                 "poppler": subprocess.run(["pdftotext","-v"],capture_output=True,text=True).stderr.split("\n")[0].split()[-1]},
                 "note": "Text-layer integrity, not a vendor guarantee. See docs/template-contract.md §5.",
             }
+            # ats.generic is written by a DIFFERENT tool (ats_generic.py) and is what consumers show as the tier badge.
+            # Replacing the whole `ats` object dropped it — that is how 270efce shipped every manifest without a tier.
+            for k in ("generic",):
+                if k in prev: m["ats"][k] = prev[k]
             mp.write_text(json.dumps(m, indent=2) + "\n")
         print(f"manifests updated: {len(agg)}")
     sys.exit(1 if fails else 0)
