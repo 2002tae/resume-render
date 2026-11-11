@@ -11,6 +11,13 @@ html,body{margin:0;padding:0;background:#fff}
 .rz-entry-head{break-after:avoid;break-inside:avoid}
 .rz-entry>.rz-sub{break-after:avoid}
 @page{size:letter;margin:0}
+/* Page margins come from .rz padding (below), so without clone a page break kept the padding only at the very top
+   and very bottom of the article: page 1 ended at the paper's edge, page 2 began at it, and WeasyPrint let a full page's
+   bottom padding run off the sheet without starting a new page — a page that 'fit' had text in the bottom margin.
+   clone gives every page its own top and bottom padding (and its background). */
+.rz{box-decoration-break:clone;-webkit-box-decoration-break:clone}
+/* render.ts dots(): the space before a " · " separator may not wrap, so no line starts with the dot */
+.rz-nb{white-space:nowrap}
 /* 페이지 여백은 @page 가 아니라 .rz 의 padding 으로 만든다.
    design-brief.html 의 .page 에는 padding 이 없으므로, 테마가 넣는 padding 이
    화면과 인쇄에서 동일하게 동작한다. @page margin 을 함께 쓰면 여백이 두 번 적용된다. */

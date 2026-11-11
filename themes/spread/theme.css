@@ -1,6 +1,13 @@
 /* spread — "5c Spread" 원본 재현. profile: expressive
    ★ 랜드스케이프 용지를 펼친 책처럼: 가운데 거터 괘선 기준 좌/우 페이지 */
-@page{size:11in 8.5in;margin:0}
+/* Bottom margin is the page's, not .rz padding: a multi-column box that continues onto page 2 fills its columns to the
+   paper's edge on page 1 even with box-decoration-break:clone (measured: 7.9pt at density 1.1). The top stays .rz
+   padding so it scales with density; clone repeats it on page 2. */
+@page{size:11in 8.5in;margin:0 0 36pt;background:oklch(0.982 0.007 90)}
+/* @page margins print only. In the browser the page is measured on screen (plan() reads the iframe's height),
+   so the same bottom margin is padding there — without it the preview fits 36pt more than the PDF can hold. */
+@media screen{.rz{padding-bottom:36pt}}
+html,body{background:oklch(0.982 0.007 90)}
 .rz{
   --paper:oklch(0.982 0.007 90); --ink:oklch(0.2 0.014 55); --mid:oklch(0.44 0.014 55);
   --faint:oklch(0.58 0.014 55); --accent:oklch(0.45 0.13 25); --rule:oklch(0.85 0.012 55);
@@ -9,7 +16,7 @@
   --fs-name:calc(46px * var(--density)); --fs-sec:calc(12px * var(--density) * var(--body-scale, 1)); --fs-meta:calc(9.2px * var(--density) * var(--body-scale, 1)); --fs-entry:calc(11.3px * var(--density) * var(--body-scale, 1)); --fs-lede:calc(13px * var(--density) * var(--body-scale, 1));
   --sp-sec:calc(8.0px * var(--density)); --sp-item:calc(5px * var(--density));
   --sp-bul:calc(2.5px * var(--density)); --rw:1px;
-  padding:calc(52px * var(--density)) calc(56px * var(--density)); background:var(--paper); color:var(--ink);
+  padding:calc(52px * var(--density)) calc(56px * var(--density)) 0; background:var(--paper); color:var(--ink);
   font-family:'Source Serif 4',Georgia,serif; font-size:var(--fs); line-height:var(--lh);
   /* 그리드는 좌우가 행을 공유해 오른쪽에 큰 빈칸이 생긴다(실측).
      멀티컬럼은 내용이 자연스럽게 이어져 흘러 '펼친 책'에 더 가깝다. */
@@ -54,7 +61,7 @@
 .rz-summary{margin:0;font-family:'Newsreader','Source Serif 4',Georgia,serif;font-style:italic;
   font-size:var(--fs-lede);line-height:1.45}
 .rz-awards{margin:0;color:var(--mid)}
-.rz-bullets{display:flex;flex-direction:column;gap:var(--sp-bul);margin-top:2px}
+.rz-bullets{display:block;margin-top:2px}
 .rz-bullet{padding-left:0}
 /* 원본은 라벨이 한 단어라 인라인으로 정렬돼 보였다. 실제 IR 라벨은 길고 길이가 제각각이라
    인라인이면 값의 시작점이 들쭉날쭉하고 줄바꿈 시 리듬이 깨진다(실측) — 고정 트랙으로 정렬.

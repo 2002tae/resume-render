@@ -53,7 +53,11 @@
 .rz-kicker{font-style:italic;color:var(--mid);margin-right:5px}
 .rz-summary{margin:0}
 .rz-awards{margin:0;color:var(--mid)}
-.rz-bullets{display:flex;flex-direction:column;gap:var(--sp-bul);margin-top:2px}
+.rz-bullets{display:block;margin-top:2px}
+/* W7/W17: a flex bullet list cannot split across pages in WeasyPrint, so a long entry's list jumped whole to the
+   next page and left the foot of page 1 empty — block + the same spacing as a margin */
+.rz-bullets>.rz-bullet{margin-bottom:var(--sp-bul)}
+.rz-bullets>.rz-bullet:last-child{margin-bottom:0}
 /* 원본은 마커 없이 행잉 인덴트 + em dash (전사) */
 /* 원본은 em-dash 텍스트 마커지만 글리프는 추출에 섞인다 — 같은 시각의 짧은 선(박스)으로 */
 .rz-bullet{position:relative;padding-left:14px}

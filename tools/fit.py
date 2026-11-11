@@ -23,6 +23,11 @@ FLOOR = 0.82
 STEPS = 5   # browser plan() 과 동일 — fit.py 가 기준
 PX2PT = 0.75   # CSS px → PDF pt (실측: 12px → 9.0pt)           # 이분탐색 반복 — 0.18 범위를 ~0.003 정밀도로
 
+def q3(x):
+    """The density a theme actually receives: render_theme writes --density with 3 decimals. Every render and every
+    reported density goes through this, so the density fit() returns is exactly one it measured (browser plan(): q3)."""
+    return float(f"{x:.3f}")
+
 EXTRA_OPTS = {}   # --opts '<json>' 로 주입 (예: {"sections":{"exclude":["summary"]}})
 
 BODY_LOCK = None   # (base_px, min_pt) — 설정되면 density 가 줄어도 본문은 min_pt 로 고정
@@ -61,6 +66,11 @@ def last_text(ir):
     return None
 
 def try_render(ir, theme, density, min_priority, out):
+    # The theme receives --density formatted to 3 decimals (render_theme), while the body-lock --body-scale was computed
+    # from the unrounded value, so a bisection midpoint and the density reported back rendered two slightly different
+    # documents — and at 10pt a 0.04% body-scale difference moved a line break onto page 2 (QUANT, 0.949375 vs 0.949).
+    # Quantize once, here, so every measured density is exactly the one a caller re-renders.
+    density = q3(density)
     r = render_opts(ir, density, min_priority, theme)
     to_pdf(r["html"], theme, out)
     p = pages_of(out)
@@ -109,7 +119,7 @@ def fit(ir, theme, target, out, log, min_body_pt=None):
                 else: d_hi = m
         p, w = try_render(kept, theme, d_lo, None, out)
         log(f"  body-lock: top-{lo}/{total}  density={d_lo:.3f} → {p}p  ✓")
-        return dict(density=round(d_lo,3), minPriority=None, topN=(lo if lo < total else None), pages=p, fitted=True, bodyPt=pt(d_lo), warnings=w)
+        return dict(density=q3(d_lo), minPriority=None, topN=(lo if lo < total else None), pages=p, fitted=True, bodyPt=pt(q3(d_lo)), warnings=w)
     trimmed = 0
     for min_priority in (None, 5, 4, 3, 2, 1):
         # density 이분탐색: lo 는 들어감(있으면), hi 는 안 들어감
@@ -125,7 +135,7 @@ def fit(ir, theme, target, out, log, min_body_pt=None):
                 if p2 <= target: lo = mid
                 else: hi = mid
             p, w = try_render(ir, theme, lo, min_priority, out)
-            return dict(density=round(lo,3), minPriority=min_priority, pages=p, fitted=True, warnings=w, bodyPt=pt(lo))
+            return dict(density=q3(lo), minPriority=min_priority, pages=p, fitted=True, warnings=w, bodyPt=pt(q3(lo)))
         p, w = try_render(ir, theme, floor, min_priority, out)
         log(f"  prio≤{min_priority or '∞'}  density={floor:.3f} → {p}p")
         if p > target:
@@ -138,7 +148,7 @@ def fit(ir, theme, target, out, log, min_body_pt=None):
             else: hi = mid
         p, w = try_render(ir, theme, lo, min_priority, out)
         log(f"  prio≤{min_priority or '∞'}  density={lo:.3f} → {p}p  ✓")
-        return dict(density=round(lo,3), minPriority=min_priority, pages=p, fitted=True, warnings=w, bodyPt=pt(lo))
+        return dict(density=q3(lo), minPriority=min_priority, pages=p, fitted=True, warnings=w, bodyPt=pt(q3(lo)))
     # 마지막 단계: priority 티어가 거칠어 실패하면 top-N(priority 순·원문 순) 이분탐색 — 정확한 N 을 찾는다
     from capacity import keep_top
     total = sum(len(x.get("bullets", [])) for sec in ("experiences","projects","research") for x in ir.get(sec, []))
@@ -158,7 +168,7 @@ def fit(ir, theme, target, out, log, min_body_pt=None):
             else: d_hi = m
         p, w = try_render(keep_top(ir, lo), theme, d_lo, None, out)
         log(f"  top-{lo} bullets  density={d_lo:.3f} → {p}p  ✓")
-        return dict(density=round(d_lo,3), minPriority=None, topN=lo, pages=p, fitted=True, bodyPt=pt(d_lo), warnings=w)
+        return dict(density=q3(d_lo), minPriority=None, topN=lo, pages=p, fitted=True, bodyPt=pt(q3(d_lo)), warnings=w)
     p, w = try_render(ir, theme, floor, 1, out)
     return dict(density=round(floor,3), minPriority=1, pages=p, fitted=False, bodyPt=pt(floor), warnings=w + [
         {"code":"FIT_FAILED","message":f"still {p} pages at density {floor:.3f} even with 1 bullet"}])

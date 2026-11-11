@@ -6,3 +6,4 @@
 .rz-skill{display:grid;grid-template-columns:64pt 1fr}   /* 실측: 라벨 없으면 트랙1 낙하 */
 .rz-section{column-count:2}                 /* 다단 */
 .rz-entry{position:absolute;top:0}          /* 읽기 순서 파괴 */
+.rz-bullets{display:flex;flex-direction:column;gap:3px}   /* 실측: 불릿 목록이 통째로 2페이지로 — 1페이지 아래 빈칸(W17) */

@@ -1,4 +1,10 @@
-@page{size:letter;margin:0 42px;background:oklch(0.972 0.012 85)}
+/* Bottom margin is the page's, not .rz padding: a multi-column box that continues onto page 2 fills its columns to the
+   paper's edge on page 1 even with box-decoration-break:clone (measured: last line 1.6–17.9pt from the bottom at
+   density 1.01–1.08). The top stays .rz padding so it scales with density; clone repeats it on page 2. */
+@page{size:letter;margin:0 42px 30pt;background:oklch(0.972 0.012 85)}
+/* @page margins print only. In the browser the page is measured on screen (plan() reads the iframe's height),
+   so the same bottom margin is padding there — without it the preview fits 30pt more than the PDF can hold. */
+@media screen{.rz{padding-bottom:30pt}}
 html,body{background:oklch(0.972 0.012 85)}
 /* broadsheet — "4a Broadsheet" 원본 복원. profile: expressive (2단)
    압축 마스트헤드 + 굵은 룰 + 큰 요약 + 굵은 룰, 아래는 2단:
@@ -16,7 +22,7 @@ html,body{background:oklch(0.972 0.012 85)}
   --sp-bul:calc(2.6px * var(--density)); --rw:1px;
   /* column-span:all 요소가 컨테이너 padding 을 무시하고 페이지 전폭으로 계산된다(실측).
      이 테마는 좌우 여백을 @page 로 옮겨 다단 컨테이너 자체가 정확한 폭이 되게 한다. */
-  padding:calc(40px * var(--density)) 0;
+  padding:calc(40px * var(--density)) 0 0;
   background:var(--paper); color:var(--ink);
   font-family:'Libre Franklin','Archivo','Helvetica Neue',sans-serif; font-size:var(--fs); line-height:var(--lh);
 }
@@ -58,7 +64,7 @@ html,body{background:oklch(0.972 0.012 85)}
 .rz-sub,.rz-coursework{margin:1px 0 0;color:var(--mid)}
 .rz-kicker{font-weight:700;color:var(--accent);text-transform:uppercase;font-size:.9em;margin-right:6px}
 .rz-awards{margin:0}
-.rz-bullets{display:flex;flex-direction:column;gap:var(--sp-bul);margin-top:3px}
+.rz-bullets{display:block;margin-top:3px}
 .rz-bullet{position:relative;padding-left:12px}
 /* 원본 마커: 작은 점 */
 .rz-bullet::before{content:"";position:absolute;left:2px;top:.55em;width:3px;height:3px;border-radius:50%;background:var(--accent)}

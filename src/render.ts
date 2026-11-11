@@ -25,6 +25,14 @@ const esc = (s: unknown): string =>
   String(s ?? "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 
 /**
+ * Items joined by " · ", breakable only AFTER a separator: the space before each dot sits in a nowrap span
+ * (_shared.css .rz-nb), so a wrapped line never starts with "·" (seen: "· Hugging Face Transformers" opening the
+ * second line of a skills group). The extracted text is unchanged — plain ASCII spaces, no NBSP, which some ATS
+ * tokenizers do not treat as whitespace.
+ */
+const dots = (items: unknown[]): string => items.map(esc).join(`<span class="rz-nb"> ·</span> `);
+
+/**
  * vars go into a style attribute, so they are a CSS injection surface even with quotes escaped
  * (`;background:url(...)` would load an external resource). Only custom properties are accepted,
  * and values are restricted to a conservative charset — no `;`, `}`, `(`, `<`, `"`, `\`.
@@ -157,12 +165,12 @@ export function render(ir: ResumeIR, opts: RenderOptions = {}): RenderResult {
           const g = ed.gpa;
           const sub = [ed.degree, ed.minor ? `Minor in ${ed.minor}` : undefined,
             g ? `${g.label ?? "GPA"} ${g.value}${g.scale ? ` / ${g.scale}` : ""}` : undefined]
-            .filter(Boolean).join(" · ");
+            .filter(Boolean);
           const bs = filterBullets(ed.details, `education[${i}]`);
           return `<div class="rz-entry">` +
             headHtml(ed.school, ed.location, dateRaw(ed.dates)) +
-            (sub ? `<p class="rz-sub">${esc(sub)}</p>` : "") +
-            (ed.coursework?.length ? `<p class="rz-coursework"><span class="rz-kicker">Coursework</span> ${esc(ed.coursework.join(" · "))}</p>` : "") +
+            (sub.length ? `<p class="rz-sub">${dots(sub)}</p>` : "") +
+            (ed.coursework?.length ? `<p class="rz-coursework"><span class="rz-kicker">Coursework</span> ${dots(ed.coursework)}</p>` : "") +
             bulletsHtml(bs, `education[${i}]`) + `</div>`;
         }).join("");
         out.push(section(key, inner));
@@ -214,7 +222,7 @@ export function render(ir: ResumeIR, opts: RenderOptions = {}): RenderResult {
         // 스킬은 하나의 그리드로: 라벨 열이 가장 긴 라벨 폭으로 정렬된다 (docs/page-policy-contract.md §7)
         const inner = groups.map((g) =>
           `<span class="rz-kicker">${g.label ? esc(g.label) : ""}</span> ` +
-          `<span class="rz-skill-items">${esc(g.items.join(" · "))}</span>`
+          `<span class="rz-skill-items">${dots(g.items)}</span>`
         ).join(" ");
         out.push(`<section class="rz-section" data-section="skills">` +
           `<h2 class="rz-section-label">${esc(labels.skills)}</h2>` +
@@ -224,15 +232,15 @@ export function render(ir: ResumeIR, opts: RenderOptions = {}): RenderResult {
       case "awards": {
         const list = ir.awards ?? [];
         if (!list.length) break;
-        const txt = list.map((a) => a.title + (a.issuer ? ` — ${a.issuer}` : "")).join(" · ");
-        out.push(section(key, `<p class="rz-awards">${esc(txt)}</p>`));
+        const txt = dots(list.map((a) => a.title + (a.issuer ? ` — ${a.issuer}` : "")));
+        out.push(section(key, `<p class="rz-awards">${txt}</p>`));
         break;
       }
       case "languages": {
         const list = ir.languages ?? [];
         if (!list.length) break;
-        const txt = list.map((l) => l.language + (l.proficiency ? ` (${l.proficiency}${l.note ? `, ${l.note}` : ""})` : "")).join(" · ");
-        out.push(section(key, `<div class="rz-entries rz-skills"><span class="rz-kicker"></span><span class="rz-skill-items">${esc(txt)}</span></div>`));
+        const txt = dots(list.map((l) => l.language + (l.proficiency ? ` (${l.proficiency}${l.note ? `, ${l.note}` : ""})` : "")));
+        out.push(section(key, `<div class="rz-entries rz-skills"><span class="rz-kicker"></span><span class="rz-skill-items">${txt}</span></div>`));
         break;
       }
       case "publications":

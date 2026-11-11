@@ -12,11 +12,14 @@
   --fs-lede:calc(11.8px * var(--density) * var(--body-scale, 1));
   --sp-sec:calc(8px * var(--density)); --sp-item:calc(4.5px * var(--density));
   --sp-bul:calc(2.2px * var(--density)); --rw:1px;
-  padding:0 0 calc(40px * var(--density)); background:var(--paper); color:var(--ink);
+  padding:calc(40px * var(--density)) 0; background:var(--paper); color:var(--ink);
   font-family:'EB Garamond',Georgia,serif; font-size:var(--fs); line-height:var(--lh);
 }
 /* 잉크 필드: basics + summary 를 같은 배경으로 이어 붙인다 */
-.rz-basics{background:var(--field);color:var(--on-field);
+/* The field bleeds to the paper's top edge on page 1 by pulling up over .rz's top padding. The padding itself stays,
+   because with box-decoration-break:clone (_shared.css) it is what gives page 2 a top margin — with padding-top 0
+   page 2 began 8pt from the edge (measured). */
+.rz-basics{background:var(--field);color:var(--on-field);margin-top:calc(-40px * var(--density));
   padding:calc(44px * var(--density)) calc(48px * var(--density)) 26px}
 .rz-name{margin:0;font-family:'Bodoni Moda',Didot,serif;font-size:var(--fs-name);font-weight:400;
   line-height:1.12;color:var(--on-field)}
@@ -52,7 +55,11 @@
 /* 원본 kicker 는 자간 .14em 소형 대문자 — 자간은 추출을 깨므로(실측) 소형 대문자만 */
 .rz-kicker{font-size:.92em;font-variant:all-small-caps;text-transform:uppercase;color:var(--accent);margin-right:6px}
 .rz-awards{margin:0}
-.rz-bullets{display:flex;flex-direction:column;gap:var(--sp-bul);margin-top:2px}
+.rz-bullets{display:block;margin-top:2px}
+/* W7/W17: a flex bullet list cannot split across pages in WeasyPrint, so a long entry's list jumped whole to the
+   next page and left the foot of page 1 empty — block + the same spacing as a margin */
+.rz-bullets>.rz-bullet{margin-bottom:var(--sp-bul)}
+.rz-bullets>.rz-bullet:last-child{margin-bottom:0}
 /* 원본: em-dash 행잉 마커 — 글리프는 추출에 섞이므로 같은 시각의 짧은 선 */
 /* em-dash 는 본문 좌측 정렬선에서 시작하지 않고 살짝 들어간다(원본) */
 .rz-bullet{position:relative;padding-left:16px}

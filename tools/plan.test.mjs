@@ -65,3 +65,21 @@ test("body-lock: no bullets and still over a page at the floor → infeasible, n
   assert.equal(p.feasible, false, JSON.stringify(p.options))
   assert.ok(p.options.some((o) => o.kind === "infeasible"))
 })
+
+// The page plan() measured must be the page a caller gets back from buildDocument(ir, assets, {vars: best.vars},
+// best.density). Before: best.density was unrounded while the theme got 3 decimals, and best carried no --body-scale,
+// so a caller rendering with best.density alone printed a smaller body and a different page than the one measured.
+test("body-lock: best.density + best.vars is a document plan() actually measured", async () => {
+  const seen = new Set()
+  const recording = async (html) => {
+    const d = /style="[^"]*--density:([0-9.]+)/.exec(html)?.[1], bs = /style="[^"]*--body-scale:([0-9.]+)/.exec(html)?.[1]
+    seen.add(`${Number(d)}|${bs}`)
+    return measure(html)
+  }
+  const p = await plan(ir, assetsFor("classic"), { mode: "compact", pages: 1, minBodyPt: 10, trim: "ask" }, recording)
+  assert.ok(p.best, JSON.stringify(p.options))
+  assert.equal(p.best.density, Number(p.best.density.toFixed(3)), `density ${p.best.density} has more than 3 decimals`)
+  assert.ok(p.best.vars && p.best.vars["--body-scale"], "best.vars carries the body-lock --body-scale")
+  assert.ok(seen.has(`${p.best.density}|${p.best.vars["--body-scale"]}`),
+    `best (${p.best.density}, ${p.best.vars["--body-scale"]}) was never measured; measured: ${[...seen].slice(-4).join(", ")}`)
+})

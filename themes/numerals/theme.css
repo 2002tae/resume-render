@@ -52,7 +52,11 @@
 .rz-summary{margin:0;font-size:var(--fs-lede);line-height:1.42}
 .rz-awards{margin:0;color:var(--mid)}
 
-.rz-bullets{display:flex;flex-direction:column;gap:var(--sp-bul);margin-top:2px}
+.rz-bullets{display:block;margin-top:2px}
+/* W7/W17: a flex bullet list cannot split across pages in WeasyPrint, so a long entry's list jumped whole to the
+   next page and left the foot of page 1 empty — block + the same spacing as a margin */
+.rz-bullets>.rz-bullet{margin-bottom:var(--sp-bul)}
+.rz-bullets>.rz-bullet:last-child{margin-bottom:0}
 /* 원본: 마커 없음 */
 .rz-bullet{padding-left:0}
 /* 원본은 라벨이 한 단어라 인라인으로 정렬돼 보였다. 실제 IR 라벨은 길고 길이가 제각각이라

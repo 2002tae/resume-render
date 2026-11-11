@@ -61,6 +61,7 @@ tools/          lint_theme.py    static rules (R1–R10), each traceable to a me
                 mutate.py        IR mutations for ats_generic (short name, no research, one job, flat skills)
                 compare.py       side-by-side against the original Claude Design capture
                 extract_roles.py transcribe a design's declarations by matching text, not DOM
+                margin_check.py  no text in the paper's top/bottom margin on any page (1-page fit and a forced page 2)
                 regression/      known-bad.css — every past defect, for the linter to catch
 docs/           ir.md · template-contract.md · design-prompt.md
 examples/       design-brief.html — hand this to a designer; page frame makes overflow visible

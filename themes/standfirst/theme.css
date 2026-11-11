@@ -51,7 +51,11 @@
 .rz-sub,.rz-coursework{margin:1px 0 0;color:var(--mid)}
 .rz-kicker{font-weight:600;color:var(--ink);margin-right:6px}
 .rz-awards{margin:0}
-.rz-bullets{display:flex;flex-direction:column;gap:var(--sp-bul);margin-top:3px}
+.rz-bullets{display:block;margin-top:3px}
+/* W7/W17: a flex bullet list cannot split across pages in WeasyPrint, so a long entry's list jumped whole to the
+   next page and left the foot of page 1 empty — block + the same spacing as a margin */
+.rz-bullets>.rz-bullet{margin-bottom:var(--sp-bul)}
+.rz-bullets>.rz-bullet:last-child{margin-bottom:0}
 /* 원본 마커: 얇은 세로 바 */
 .rz-bullet{position:relative;padding-left:11px}
 .rz-bullet::before{content:"";position:absolute;left:0;top:.28em;width:1px;height:1em;background:var(--rule)}

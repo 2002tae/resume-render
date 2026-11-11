@@ -414,8 +414,10 @@ POST /resume-tailor/render
 | W11 | 다단 오버플로는 페이지를 늘리지 않고 잘림 | fit 은 페이지 수 + 마지막 문자열 존재로 판정 |
 | W12 | `break-inside:avoid` 엔트리가 페이지 경계에 걸리면 통째로 소실 | 불릿 단위로만 보호 |
 | W13 | flex 컬럼 아이템이 grid 자손을 품으면 ~1줄 유령 높이 (가장 가까운 flex 조상 아이템에 붙음) | grid 헤드를 쓰는 테마는 섹션·엔트리를 `block` |
-| W14 | (추출기) pdfminer 가 세로로 가까운 **우측 정렬 날짜**들을 한 텍스트 박스로 묶어 다른 위치에 뱉는다 | 우측 정렬 날짜 디자인의 고유 리스크. ATS 최대 안전은 인라인 날짜(`plain`) |
+| W14 | (추출기) pdfminer 가 세로로 가까운 **우측 정렬 날짜**들을 한 텍스트 박스로 묶어 다른 위치에 뱉는다. **bullet 이 없는 엔트리에서 더 쉽게 일어난다** — 날짜 사이를 갈라 줄 전폭 텍스트가 없어서 (실측 2026-10: classic, 경력 엔트리가 머리줄만 남자 pdfminer 가 그 날짜를 다음 섹션 제목 뒤로 보냄 → 경력 항목 1≠2, ATS B) | 우측 정렬 날짜 디자인의 고유 리스크. ATS 최대 안전은 인라인 날짜(`plain`). 1페이지 절삭이 경력 엔트리를 비우지 않게 할 것 (`ENTRY_NO_BULLETS` 가 그 신호) |
 | W16 | flex 컬럼 안에서 `break-after:avoid` 무시 → 2페이지에서 섹션 제목이 1쪽 끝에 홀로 남음. 같은 구조에서 줄바꿈되는 flex 머리줄 아래 ~1줄 유령 틈(W13 과 같은 계열) | `.rz-section`·`.rz-entries` 는 block + margin. 린트 R11 이 막는다 |
+| W17 | 페이지 여백을 `.rz` padding 으로 만들면 페이지 경계에서 padding 이 상자의 맨 처음·맨 끝에만 붙는다 — 1쪽은 종이 끝까지, 2쪽은 종이 맨 위부터 찍히고, 꽉 찬 1쪽의 아래 padding 은 새 페이지를 만들지 않고 종이 밖으로 넘어간다 (실측: 13개 중 9개 테마에서 마지막 줄이 792pt 종이의 783–791pt, 2쪽 첫 줄 2–12pt. fit 이 이 상태를 "1페이지" 로 판정했다) | `_shared.css` 의 `.rz{box-decoration-break:clone}` — 페이지마다 위·아래 padding 과 배경을 다시 붙인다. `tools/margin_check.py` 가 막는다. 첫 페이지 위 padding 이 0 인 테마(colorfield)는 padding 을 두고 첫 블록을 음수 margin 으로 끌어올린다 |
+| W18 | 다단(`columns`) 컨테이너는 다음 페이지로 이어질 때 clone 된 아래 padding 을 무시하고 컬럼을 종이 끝까지 채운다 (실측: broadsheet 1.6–17.9pt, spread 7.9pt) | 다단 테마의 아래 여백은 `@page` margin 으로 (W5 와 같은 처방). 위 여백은 density 를 따르도록 padding 에 둔다 |
 | W15 | (추출기) poppler `pdftotext` 기본 모드가 줄 끝 하이픈을 지우며 줄을 잇는다(`state-` / `of-the-art` → `stateof-the-art`). 하이픈은 PDF 안에 있다. Chrome·WeasyPrint·fitz 모두 동일 — 어느 단어가 걸리느냐만 다르다 (Artemis 실측) | 엔진 문제가 아니다. `ats_check` 의 `hyphenBreaks` 경고가 이것. 키워드 매칭이 중요하면 `-layout` 또는 pdfminer 를 쓰는 리더가 유리 |
 
 ## §11. 린트 규칙 추가분
@@ -427,6 +429,7 @@ POST /resume-tailor/render
 | R10 | 불릿 마커에 텍스트 글리프(`content:"·"`) 금지 — CSS 박스로 | stream 추출에서 `workday,·smartrecruiters` 삽입 실측 |
 | R4' | 음수 자간은 경고 | W8 |
 | R4'' | **양수 자간 0.08em 초과 금지 — 섹션 라벨 예외 없음** | 4 엔진 실측: 0.08em 안전, 0.1em 부터 poppler·pdfminer 가 `E D U C A T I O N` 으로 분리 → 헤딩 매처 실패 |
+| R11 | `.rz-section`·`.rz-entries`·`.rz-bullets` 를 flex 로 두지 말 것 (block + 같은 값의 margin) | W16 · W7 — 불릿 목록은 2026-10 에 추가: flex 불릿 목록은 페이지 사이로 안 나뉘어 긴 엔트리의 목록이 통째로 2쪽으로 넘어가고 1쪽 아래가 비었다 |
 
 ## §12. 검사기가 매니페스트 defaults 를 쓴다 (감사 후 정정)
 
@@ -449,6 +452,9 @@ POST /resume-tailor/render
   **키우는** 방향에 쓴다 ("본문 ≥10pt"). 균일 확대는 이름·여백까지 커져 수용량이 급감한다(실측: numerals 0 bullet).
 - body-lock 모드(`minBodyPt`): `density` 로 여백을 줄이면서 `bodyScale = minPt / (base × 0.75 × density)` 로 본문을 고정한다.
   `tools/fit.py` 와 `src/browser.ts plan()` 이 같은 식을 쓴다.
+- 다시 렌더할 때: `plan()` 의 `best.density` 는 테마가 받는 3자리 값이고, `best.vars` 에 그 밀도의 `--body-scale` 이 들어 있다.
+  측정한 그 페이지를 얻으려면 `buildDocument(ir, assets, {...opts, vars: best.vars}, best.density)`. `density` 만 넘기면 본문이
+  minBodyPt 보다 작게 찍혀 다른 페이지가 나온다 (2026-10 이전엔 `best` 에 vars 가 없었고 density 도 반올림 전 값이었다).
 
 ## §15. 구조를 모르는 파서로 잰 식별성 (tools/ats_generic.py)
 

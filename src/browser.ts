@@ -79,7 +79,10 @@ export type Plan = {
   /** true when trim:"ask" found a solution that removes bullets — the UI must let the user confirm */
   needsChoice: boolean;
   atOriginal: { pages: number; bodyPt: number };
-  best?: { density: number; bodyPt: number; pages: number; removed: string[] };
+  /** `vars` is what the caller must pass to buildDocument with `density` to get the measured page back: under body-lock it
+   *  holds the --body-scale that pins the body at minBodyPt. Rendering with `density` alone gives a smaller body and a
+   *  different page. `density` is already quantized to the 3 decimals the theme receives. */
+  best?: { density: number; bodyPt: number; pages: number; removed: string[]; vars: Record<string, string> };
   options: PlanOption[];
   warnings: string[];
 };
@@ -93,8 +96,25 @@ const FLOOR = 0.82;   // same as tools/fit.py — below this body text drops und
  * Multi-column themes overflow *without* adding pages, so "pages" here is height / page-height,
  * which is what the user experiences.
  */
+/** --density is rendered to 3 decimals; quantize before computing anything from it (tools/fit.py try_render does the same). */
+const q3 = (d: number) => Number(d.toFixed(3));
+
+/** Body-lock vars for a density — the same formula pagesAt measures with. */
+const lockVarsFor = (assets: ThemeAssets, policy: FitPolicy, d: number): Record<string, string> => {
+  const lock = policy.mode !== "original" && policy.minBodyPt != null;
+  return lock ? { "--body-scale": (policy.minBodyPt! / ((assets.manifest.baseBodyPx ?? 11) * 0.75 * q3(d))).toFixed(4) } : {};
+};
+
 export async function plan(ir: ResumeIR, assets: ThemeAssets, policy: FitPolicy, measure: Measure,
                            opts: RenderOptions = {}): Promise<Plan> {
+  const { best: inner, ...rest } = await planInner(ir, assets, policy, measure, opts);
+  if (!inner) return rest;
+  const d = q3(inner.density);
+  return { ...rest, best: { ...inner, density: d, vars: { ...(opts.vars ?? {}), ...lockVarsFor(assets, policy, d) } } };
+}
+
+async function planInner(ir: ResumeIR, assets: ThemeAssets, policy: FitPolicy, measure: Measure,
+                         opts: RenderOptions): Promise<Omit<Plan, "best"> & { best?: Omit<NonNullable<Plan["best"]>, "vars"> }> {
   const m = assets.manifest;
   const size = m.page?.size ?? "letter", orient = m.page?.orientation ?? "portrait";
   const pageH = PAGE_PX[size][orient][1];
@@ -111,7 +131,8 @@ export async function plan(ir: ResumeIR, assets: ThemeAssets, policy: FitPolicy,
   // body-lock: minBodyPt 가 있으면 density 는 여백·이름·간격만 줄이고 --body-scale 이 본문을 minBodyPt 에 붙든다.
   // tools/fit.py 의 BODY_LOCK 과 같은 규칙 — 서버와 브라우저가 같은 답을 낸다.
   const pagesAt = async (density: number, minPriority?: number, irX: ResumeIR = ir) => {
-    const vars = lock ? { ...(opts.vars ?? {}), "--body-scale": (minBodyPt! / (bodyPx * 0.75 * density)).toFixed(4) } : opts.vars;
+    density = q3(density);   // measure exactly the document a caller will re-render (see q3)
+    const vars = lock ? { ...(opts.vars ?? {}), ...lockVarsFor(assets, policy, density) } : opts.vars;
     const o = { ...opts, vars, filter: { ...(opts.filter ?? {}), ...(minPriority ? { minPriority } : {}) } };
     const { html, warnings: w } = buildDocument(irX, assets, o, density);
     for (const x of w) warnings.push(`${x.code}${x.path ? "@" + x.path : ""}`);

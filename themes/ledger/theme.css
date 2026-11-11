@@ -60,7 +60,11 @@
 .rz-awards{margin:0;color:var(--mid)}
 
 /* 번호 매긴 불릿 */
-.rz-bullets{display:flex;flex-direction:column;gap:var(--sp-bul);margin-top:3px}
+.rz-bullets{display:block;margin-top:3px}
+/* W7/W17: a flex bullet list cannot split across pages in WeasyPrint, so a long entry's list jumped whole to the
+   next page and left the foot of page 1 empty — block + the same spacing as a margin */
+.rz-bullets>.rz-bullet{margin-bottom:var(--sp-bul)}
+.rz-bullets>.rz-bullet:last-child{margin-bottom:0}
 .rz-bullet{counter-increment:ent;position:relative;padding-left:24px}
 .rz-bullet::before{content:counter(ent,decimal-leading-zero);position:absolute;left:0;
   font-family:var(--mono);font-size:calc(var(--fs-meta) * .9);color:var(--faint)}
