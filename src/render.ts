@@ -1,6 +1,6 @@
 import type {
   ResumeIR, RenderOptions, RenderResult, Warning, SectionKey,
-  Bullet, LooseBullet, Contact, LooseContact, DateRange, SkillGroup,
+  Bullet, LooseBullet, Contact, LooseContact, DateRange, DateValue, SkillGroup,
 } from "./ir.js";
 
 /**
@@ -243,7 +243,23 @@ export function render(ir: ResumeIR, opts: RenderOptions = {}): RenderResult {
         out.push(section(key, `<div class="rz-entries rz-skills"><span class="rz-kicker"></span><span class="rz-skill-items">${txt}</span></div>`));
         break;
       }
-      case "publications":
+      case "publications": {
+        // An entry per item, in the same markup as research: themes style it with no new CSS. Title on the head
+        // line with the date; authors · venue · note on the sub line. A talk or poster is a publication with a
+        // venue, so an academic CV's "Presentations" is this section under a different label.
+        const list = ir.publications ?? [];
+        if (!list.length) break;
+        const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+        const when = (d?: DateValue): string | undefined =>
+          d ? (d.month ? `${MONTHS[d.month - 1]} ${d.year}` : String(d.year)) : undefined;
+        out.push(section(key, list.map((p) => {
+          const sub = [p.authors?.length ? p.authors.join(", ") : undefined, p.venue, p.note,
+            p.doi ? `doi:${p.doi}` : undefined, p.url].filter(Boolean).join(" · ");
+          return `<div class="rz-entry">` + headHtml(p.title, undefined, when(p.date)) +
+            (sub ? `<p class="rz-sub">${inline(sub)}</p>` : "") + `</div>`;
+        }).join("")));
+        break;
+      }
       case "certifications":
         // v0.1: not yet rendered — surface rather than silently drop
         if ((ir as any)[key]?.length) warn("UNKNOWN_SECTION", `${key} present but not rendered in this version`, key);
