@@ -15,9 +15,9 @@ Most résumé tools give you a template and hope it parses. This one:
 - **Separates content from presentation completely.** The renderer emits one semantic HTML
   structure; a template is a single `theme.css`. A template cannot add, remove, or reorder text —
   so it cannot fabricate anything, and user-supplied templates are safe to accept.
-- **Measures instead of promising.** Every theme is rendered against three fixtures (a sparse
-  first-year résumé, a pathological one with missing fields and 60-character emails, and a dense
-  real one) and run through `pdftotext` in two modes. The results are in each theme's
+- **Measures instead of promising.** Every theme is rendered against four fixtures (a sparse
+  first-year résumé, a pathological one with missing fields and 60-character emails, a typical
+  one-page résumé, and a dense real one) and run through `pdftotext` in two modes. The results are in each theme's
   `manifest.json`. The rules in `tools/lint_theme.py` all come from observed failures — there is
   no rule in there that didn't first break something.
 - **Auto-fit is a real problem here, not an afterthought.** Every bullet carries a `priority`;
@@ -26,14 +26,15 @@ Most résumé tools give you a template and hope it parses. This one:
 
 ## Honest scope
 
-- Two ATS checks. `ats_check.py` knows the markup and verifies **text-layer integrity**;
-`ats_generic.py` does not know the markup and grades what a generic heading-lexicon parser would
-identify across three extractors — that one found the letter-spacing problem the first one had
-been rationalising. The ATS check verifies **text-layer integrity** — that every string survives extraction, in
-  order, with section labels and contacts intact. It is not a claim that any specific vendor's
-  parser behaves a particular way. It does catch the things that actually go wrong: letter-spacing
-  splitting words into characters, emails breaking mid-token, right-aligned dates landing inside
-  wrapped titles, marginal labels being injected into paragraphs.
+- Two ATS checks, neither a claim about any specific vendor's parser.
+  - `ats_check.py` knows the markup and verifies **text-layer integrity**: every string survives
+    extraction, in order, with section labels and contacts intact. It catches what actually goes
+    wrong: letter-spacing splitting words into characters, emails breaking mid-token, right-aligned
+    dates landing inside wrapped titles, marginal labels being injected into paragraphs.
+  - `ats_generic.py` does not know the markup. It grades what a generic heading-lexicon parser would
+    identify across three extractors (poppler, pdfminer, pypdf), on the base résumé and four mutations
+    of it; the grade is `ats.generic` in each manifest. It found a letter-spacing problem the first
+    check had been rationalising.
 - Two-column themes are marked `expressive`. Their text is complete in every extraction mode,
   but reading order is **not** preserved when a parser reads by visual position — sections from
   the two columns interleave. Each manifest's `ats.orderPreserved` says exactly which modes hold.
@@ -50,8 +51,8 @@ adapters/       python/resume_ir.py — Pydantic mirror of ir.ts for backends (s
 themes/         one directory per theme: theme.css + manifest.json
   _shared.css   structural defaults every theme inherits (page margin convention,
                 UA neutralisation, robustness rules derived from fixtures)
-fixtures/       minimal · ragged · dense
-tools/          lint_theme.py    static rules (R1–R10), each traceable to a measured failure
+fixtures/       minimal · ragged · typical · dense
+tools/          lint_theme.py    static rules (R1–R11), each traceable to a measured failure
                 ats_check.py     render every theme × fixture with manifest defaults, extract, verify
                 fit.py           search density, then priority trimming, until the page target holds
                                  (also detects multicolumn overflow, which does not add pages)
@@ -63,6 +64,7 @@ tools/          lint_theme.py    static rules (R1–R10), each traceable to a me
                 extract_roles.py transcribe a design's declarations by matching text, not DOM
                 margin_check.py  no text in the paper's top/bottom margin on any page (1-page fit and a forced page 2)
                 regression/      known-bad.css — every past defect, for the linter to catch
+                plan.test.mjs    unit tests for the browser fitter (npm test)
 docs/           ir.md · template-contract.md · design-prompt.md
 examples/       design-brief.html — hand this to a designer; page frame makes overflow visible
 ```
@@ -93,8 +95,8 @@ no bullets, or a field couldn't be rendered, it says so with a path.
 
 ## Themes
 
-12 themes, each transcribed from a Claude Design original and checked against it side by side
-(`tools/compare.py`). `profile` is the design axis; `ats.verified` is measured by `tools/ats_check.py`
+13 themes. Twelve are transcribed from a Claude Design original and checked against it side by side
+(`tools/compare.py`); `plain` is a deliberately bare theme for unattended rendering. `profile` is the design axis; `ats.verified` is measured by `tools/ats_check.py`
 — **with each theme's manifest `defaults` applied**, so the verified configuration is the shipped one.
 
 | id | profile | pages | notes |
@@ -119,8 +121,11 @@ instanced from Archivo's `wdth` axis because WeasyPrint ignores `font-stretch`.
 ```
 npm install && npm run build
 pip install -r requirements.txt          # verification tools only; needs poppler-utils on PATH
+npm test                                 # type-check + unit tests
+npm run check                            # syncs manifests, then runs the four checks below (ats_check without --write)
 python3 tools/lint_theme.py themes/*/theme.css
 python3 tools/visual_check.py         # pixel diff against tools/visual-ref — catches layout breaks ATS can't
+python3 tools/margin_check.py         # no text in the top/bottom page margin, on page 1 and a forced page 2
 python3 tools/ats_check.py --write    # ~2 min, needs weasyprint + poppler; writes ats.* into manifests
 ```
 
